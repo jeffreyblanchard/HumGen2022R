@@ -86,9 +86,13 @@ Many introductory and advance tutorials have been developed for R.  Here are a f
 
 There are also many workshops and online R courses that you could take to follow up what you learn in this class.
 
-### Getting set up
+### Bioinformatics User Group (BUG) 
 
-#### Bio497
+The graduate students at UMass created and lead a Bioinformatics User Group (BUG) that offers weekly programming sessions, tutorials, a Slack Channel and other helpful information. If you are interested in learning more join the Slack Channel (Bioinformatics User Group (BUG) https://join.slack.com/t/umass-bioinformatics/shared_invite/zt-1fik4ylqe-zPnYpxU4VOKdZpF1m5oeXA
+
+## Getting set up
+
+### Bio497
 
 If you are an undergraduate in 497 go to [RStudio Cloud](https://rstudio.cloud/) and create an account. I will share the link for our Workspace in Chat. The steps are
 
@@ -98,9 +102,9 @@ If you are an undergraduate in 497 go to [RStudio Cloud](https://rstudio.cloud/)
 * Click on Project tab
 * Start assignment
 
-#### Bio697
+### Bio697
 
-If you are a graduate student in 697 install R and RStudio on your own computer or use the MGHPCC [Instructions](MGHPCC.html). Course materials will be available through our [Github repository](https://github.com/jeffreyblanchard/RGenome2021)
+If you are a graduate student in 597 please set up an account (you will need your PIs approval) on Unity https://unity.rc.umass.edu/. You will be using R and RStudio from the Unity HPC. You are also welcome to use R and RStudio it from your own computer.
 
 ### Working in RStudio
 
@@ -374,7 +378,7 @@ Lab Reports will be made using the RMarkdown notation. To make a Lab Report
 
 ### What to turn in?
 
-* If you are working on RStudio Cloud or the MGPHCC You will need to first export the your Lab1_yourname.html file to yourcomputer.
+* If you are working on RStudio Cloud or the Unity You will need to first export the your Lab1_yourname.html file to yourcomputer.
 
 ![](images/Export.png)
 * Then upload the file to Moodle
