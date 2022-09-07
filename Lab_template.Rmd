@@ -1,0 +1,44 @@
+---
+title: "RMarkdown template for Human Genome Analysis Labs"
+author: "Jeffrey Blanchard"
+date: "8/27/2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
+---
+
+## Course examples
+
+```{r}
+
+```
+
+## Exercises
+
+### Ex1
+
+```{r}
+
+```
+
+### Ex2
+
+```{r}
+
+```
+
+### Ex3
+
+```{r}
+
+```
+
+### Ex4
+
+```{r}
+
+```
+
