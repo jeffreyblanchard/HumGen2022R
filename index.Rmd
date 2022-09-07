@@ -4,7 +4,7 @@ output: html_document
 date: '2022-09-02'
 ---
 
-This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/RGenome2021) for Human Genome Analysis taught at the University of Massachusetts Amherst in Spring 2021 by Prof. Jeffrey Blanchard.
+This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/HumGen2022R) for Human Genome Analysis taught at the University of Massachusetts Amherst in Fall 2022 by Prof. Jeffrey Blanchard.
 
 ## Lab
 
