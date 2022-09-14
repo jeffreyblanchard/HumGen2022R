@@ -4,7 +4,7 @@ output: html_document
 date: 'Fall 2022'
 ---
 
-This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/HumGen2022R) for Human Genome Analysis taught at the University of Massachusetts Amherst by Prof. Jeffrey Blanchard.
+This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/HumGen2022R) for Human Genome Analysis taught at the University of Massachusetts Amherst by Prof. Jeffrey Blanchard.  If you are not using RStudio Cloud here are [directions](HumGen_github.html) for creating a RStudio project space that is in sync with the course github and will download the files in the course repo.
 
 ## Lab
 
