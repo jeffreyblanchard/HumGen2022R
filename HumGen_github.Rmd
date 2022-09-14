@@ -1,5 +1,5 @@
 ---
-title: "Pulling down the files from the course github"
+title: "Pulling down the files from the course github repo"
 output:
   html_document:
     toc: true
