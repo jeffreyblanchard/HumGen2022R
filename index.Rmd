@@ -1,11 +1,12 @@
 ---
 title: "Human Genome Analysis"
 output: html_document
-date: '2022-09-02'
+date: 'Fall 2022'
 ---
 
-This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/HumGen2022R) for Human Genome Analysis taught at the University of Massachusetts Amherst in Fall 2022 by Prof. Jeffrey Blanchard.
+This is a rendering of hmtl files from the course repository  (https://github.com/jeffreyblanchard/HumGen2022R) for Human Genome Analysis taught at the University of Massachusetts Amherst by Prof. Jeffrey Blanchard.
 
 ## Lab
 
 * Lab 1 : [Introduction to R and Reproducible Research](HumGen_Lab1_intro.html)
+* Lab 2 : [Data Wrangling 23andMe with the tidyverse](HumGen_Lab2_datawrangle.html)
