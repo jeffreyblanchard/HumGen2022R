@@ -1,13 +1,13 @@
 ---
-title: "Lab 2 : Data Wrangling 23andMe with the tidyverse"
+title: " "
+author: " "
+date: " "
 output:
   html_document:
     toc: true
     toc_depth: 4
     theme: united
     highlight: tango
-editor_options: 
-  chunk_output_type: console
 ---
 
 ## Learning objectives
