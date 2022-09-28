@@ -144,7 +144,7 @@ Modify ex1 to make a stacked bar graph with the contributions of each genotype t
 
 ### Exercise 3
 
-Turn ex3 into an interactive graph using plotly. Note: Titles in plotly often need to be wrapped. I do this using `labs(title = str_wrap("Total number of SNPs on each chromosome", 40)`.
+Turn ex2 into an interactive graph using plotly. Note: Titles in plotly often need to be wrapped. I do this using `labs(title = str_wrap("Total number of SNPs on each chromosome", 40)`.
 
 ### Exercise 4
 
