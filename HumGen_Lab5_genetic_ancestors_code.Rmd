@@ -1,0 +1,63 @@
+---
+title: "Human Genome Analysis Lab 5 : How Many Genetic Ancestors Do I have?"
+author: "Jeffrey Blanchard"
+date: "3/21/2021"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+    highlight: tango
+---
+
+# Overview - Genetic vs genealogical ancestors
+
+The chart below shows a family tree radiating out from one individual. Each successive layer out shows an individual’s ancestors another generation back in time, parents, grandparents, great-grandparents and so on back (magenta for female, blue for male).
+
+### 4 Generations
+
+```{r, results="hide", warning=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+# Run the simulation
+k = 5 # number of generations - 1
+source("R_helper/family_tree_plotting_functions.R")
+recoms<-read.table("R_helper/recombination_events.out",as.is=TRUE,head=TRUE)
+source("R_helper/transmission_sims_functions.R")
+inds.sex<-unique(recoms$sexind)
+
+family.chunks<-simulate.pedigree(num.meioses=k)
+genome.length = 2871008379 # guessed at this number to make the code work
+par(mar=c(0,0,0,0))
+pie<-lapply(1:2^k,function(x){c(k,k)})
+repeat.cols<-c("white","white")
+my.cols<-rep(repeat.cols,2^(k-1))
+my.pie(pie,sector.colors=my.cols)
+
+for(i in (k-1):1){
+	pie<-lapply(1:2^i,function(x){c(i,i+1)})
+	repeat.cols<-c("magenta","blue")
+	my.cols<-rep(repeat.cols,2^(i-1))
+	num.blocks<-sapply(family.chunks[[i]],function(ind){ sum(unlist(lapply(ind,function(x){if(is.null(x)){return(0)}; nrow(x)})))})
+	amount.genome<-unlist(lapply(family.chunks[[i]],function(ind){ sum(unlist(lapply(ind,function(x){if(is.null(x)){return(0)}; sum(x[,2]-x[,1])})))}))
+	frac.genome<-amount.genome/genome.length
+
+#my.cols<-sapply(1:length(my.cols),function(i){adjustcolor(my.cols[i],0.03+0.97*frac.genome[i])})
+my.cols<-sapply(1:length(my.cols),function(i){adjustcolor(my.cols[i],frac.genome[i]/max(frac.genome))})
+my.cols[num.blocks==0]<-"white"
+
+my.pie(pie,add=TRUE,sector.colors=my.cols)
+	text(-i-0.5,-0.7,paste(format(100*mean(frac.genome)/2,digit=2), format(100*mean(frac.genome==0),digit=2),sep=", "),cex=0.8,srt=90)
+	text(i+0.5,-0.7,paste(format(100*min(frac.genome)/2,digit=2),"-",format(100*max(frac.genome)/2,digit=2)),cex=0.8,srt=90)
+	text(-k/2-1,-1.2,"Mean % contribution, % with zero",cex=1)
+  text(k/2+1,-1.2,"Min-Max % contribution",cex=1)
+}
+```
+
+
+
+## Acknowledgements
+
+The R code is derived code in a blog post by [Graham Coop](https://gcbias.org/)
+
+
+
+

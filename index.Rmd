@@ -10,6 +10,7 @@ This is a rendering of hmtl files from the course repository  (https://github.co
 
 * Lab 1 : [Introduction to R and Reproducible Research](HumGen_Lab1_intro.html)
 * Lab 2 : [Data Wrangling 23andMe with the tidyverse](HumGen_Lab2_datawrangle.html)
-* Lab 3 : [ggplot 1](HumGen_Lab3_datavis.html)
-* Lab 4 : [ggplot 2](HumGen_Lab4_pub_graphics.html)
+* Lab 3 : [Visualizing data with ggplot 1](HumGen_Lab3_datavis.html)
+* Lab 4 : [Visualizing data with ggplot 2](HumGen_Lab4_pub_graphics.html)
+* Lab 5 : [How Many Genetic Ancestors Do I have?"](HumGen_Lab5_genetic_ancestors.html)
 
