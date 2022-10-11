@@ -18,7 +18,7 @@ The chart below shows a family tree radiating out from one individual. Each succ
 
 ```{r, results="hide", warning=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 # Run the simulation
-k = 5 # number of generations - 1
+k = 9 # number of generations - 1
 source("R_helper/family_tree_plotting_functions.R")
 recoms<-read.table("R_helper/recombination_events.out",as.is=TRUE,head=TRUE)
 source("R_helper/transmission_sims_functions.R")
