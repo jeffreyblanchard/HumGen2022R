@@ -227,7 +227,7 @@ animate(p, renderer = gifski_renderer(), end_pause = 15)
 You can change the output to a gif file that can be used in slide presentations or a tweet. After you make the gif set EVAL=FALSE in your report so that it doesn't recreate the gif (this takes a fair amount of time) each time you Knit. 
 
 ```{r, eval=FALSE, warnings=FALSE, message=FALSE}
-anim_save(p, "daily_counts_US.gif")
+anim_save(animation = p, "daily_counts_US.gif")
 ```
 
 
@@ -267,7 +267,7 @@ Pay attention to how your graphs look in today's final knitted lab report. You w
 
 ### Exercise 1
 
-Instead of making a graph of 5 countries on the same graph as in the above example, use `facet_wrap` with `scales="free_y"` as we did in lab 5.
+Instead of making a graph of 5 countries on the same graph as in the above example, use `facet_wrap` with `scales="free_y"` as we did in lab 4.
 
 ### Exercise 2
 

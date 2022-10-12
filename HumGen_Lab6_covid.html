@@ -721,7 +721,7 @@ examples may take several minutes to create the animation.</p>
 presentations or a tweet. After you make the gif set EVAL=FALSE in your
 report so that it doesn’t recreate the gif (this takes a fair amount of
 time) each time you Knit.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anim_save</span>(p, <span class="st">&quot;daily_counts_US.gif&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anim_save</span>(<span class="at">animation =</span> p, <span class="st">&quot;daily_counts_US.gif&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This download may take about 5 minutes. You only need to do this once so set eval=false in your Rmd file</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url=</span><span class="st">&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv&quot;</span>, </span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">&quot;data/time_series_covid19_deaths_global.csv&quot;</span>)</span></code></pre></div>
@@ -772,7 +772,7 @@ report. You will be docked points if the graphs do not look nice
 <h3>Exercise 1</h3>
 <p>Instead of making a graph of 5 countries on the same graph as in the
 above example, use <code>facet_wrap</code> with
-<code>scales=&quot;free_y&quot;</code> as we did in lab 5.</p>
+<code>scales=&quot;free_y&quot;</code> as we did in lab 4.</p>
 </div>
 <div id="exercise-2" class="section level3">
 <h3>Exercise 2</h3>
