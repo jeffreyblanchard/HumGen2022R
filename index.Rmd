@@ -12,5 +12,6 @@ This is a rendering of hmtl files from the course repository  (https://github.co
 * Lab 2 : [Data Wrangling 23andMe with the tidyverse](HumGen_Lab2_datawrangle.html)
 * Lab 3 : [Visualizing data with ggplot 1](HumGen_Lab3_datavis.html)
 * Lab 4 : [Visualizing data with ggplot 2](HumGen_Lab4_pub_graphics.html)
-* Lab 5 : [How Many Genetic Ancestors Do I have?"](HumGen_Lab5_genetic_ancestors.html)
+* Lab 5 : [How Many Genetic Ancestors Do I have?](HumGen_Lab5_genetic_ancestors.html)
+* Lab 6 : [Data wrangling, graphing and animating the COVID-19 reporting data](HumGen_Lab6_covid.html)
 
