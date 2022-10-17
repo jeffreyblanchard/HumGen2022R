@@ -14,4 +14,5 @@ This is a rendering of hmtl files from the course repository  (https://github.co
 * Lab 4 : [Visualizing data with ggplot 2](HumGen_Lab4_pub_graphics.html)
 * Lab 5 : [How Many Genetic Ancestors Do I have?](HumGen_Lab5_genetic_ancestors.html)
 * Lab 6 : [Data wrangling, graphing and animating the COVID-19 reporting data](HumGen_Lab6_covid.html)
+* Lab X1 : [Maps from the COVID-19 reporting data (extra credit for 497, required for 697)](HumGen_LabX1_maps.html)
 
