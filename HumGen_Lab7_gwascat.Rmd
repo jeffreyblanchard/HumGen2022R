@@ -10,9 +10,14 @@ editor_options:
   chunk_output_type: console
 ---
 
+## IMPORTANT POINTS FOR TODAY'S LAB FOR UNITY USERS
+
+1. `bioconductor` and `gwascat` take a long time to install (20-30 min). 
+2. The GWAS catalog is getting very large (~250 MB) and difficult to download with intermittent or not fast internet connections. FOR UNITY USERS it is available on Moodle (Github doesn't allow files greater than 100 MB). Put it in your `data` folder. 
+
 ## Learning objectives
 
-* Mapping your SNP data to phenotypes and the literature using gwascat
+* Mapping your 23andMe and Ancestry SNP data to phenotypes and the literature using gwascat
 
 ## Bioconductor
 
@@ -85,6 +90,15 @@ Not so exciting, but we can also use our rsid to link to [NHGRI-EBI Catalog of p
 
 [`gwascat`](https://bioconductor.org/packages/release/bioc/html/gwascat.html) is an R packackage for working with the NHGRI-EBI Catalog of published genome-wide association studies. 
 
+The GWAS catalog is getting very large (~250 MB) and difficult to download with intermittent or not fast internet connections. I have downloaded the table and put it in the data folder. FOR UNITY USERS it is also available in Moodle (Github doesn't allow files greater than 100 MB).
+
+#### Upload the gwas data table
+```{r}
+updated_gwas_data <- read_tsv("data/updated_gwas_data.tsv")
+```
+
+#### YOU DO NOT NEED TO DO THE NEXT STEP FOR LAB, but To get the most recent data set
+
 To get the catalog into a R data frame.
 
 ```{r, eval=FALSE}
@@ -96,10 +110,7 @@ Save table in case of internet issues
 write_tsv(updated_gwas_data, "data/updated_gwas_data.tsv") 
 ```
 
-Save table in case of internet issues
-```{r}
-updated_gwas_data <- read_tsv("data/updated_gwas_data.tsv")
-```
+### Working with the GWAS catalog
 
 To find the date of the most recent study
 
