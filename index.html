@@ -298,8 +298,8 @@ pre code {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -307,16 +307,9 @@ pre code {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -390,6 +383,9 @@ Genetic Ancestors Do I have?</a></li>
 and animating the COVID-19 reporting data</a></li>
 <li>Lab X1 : <a href="HumGen_LabX1_maps.html">Maps from the COVID-19
 reporting data (extra credit for 497, required for 697)</a></li>
+<li>Lab 7 : <a href="HumGen_Lab7_gwascat.html">Linking 23andME SNPs to
+the NHGRI-EBI Catalog of published genome-wide association
+studies</a></li>
 </ul>
 </div>
 

@@ -1,0 +1,316 @@
+---
+title: "Human Genome Analysis Lab 7 : Linking 23andME SNPs to the NHGRI-EBI Catalog of published genome-wide association studies"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+## Learning objectives
+
+* Mapping your SNP data to phenotypes and the literature using gwascat
+
+## Bioconductor
+
+[Bioconductor](https://bioconductor.org/) is an open source, open development software project for genomic data analysis. There are thousands of software packages available and an active user community. R/Bioconductor is one of the primary mechanisms for publishing new genomic data analysis tools. We will use Bioconductor in the this and the following weeks labs.
+
+Bioconductor is already installed on RStudio Cloud. Install Bioconductor locally on your computer by typing in the R console 
+
+```{r eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.15")
+```
+
+Individual packages that are not part of the BioConductor core can be installed using
+
+```{r eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("name_of_package")
+# for example
+BiocManager::install("gwascat")
+
+```
+
+## Libraries for today's lab. 
+
+Note if you are working on your own computer (and not RStudio Cloud) you will need to install Bioconductor before installing `gwascat`.
+
+```{r, message = FALSE}
+# Load Libraries
+library(tidyverse)
+library(DT)
+library(gwascat)
+options(timeout=600)
+```
+
+## Exploring the traits associated with your genome using `gwascat`
+
+The below examples and text are from a blog post by [Adam Metcalf](https://dabblingwithdata.wordpress.com/2018/09/07/analysing-your-23andme-genetic-data-in-r-part-2-exploring-the-traits-associated-with-your-genome/). I have stripped down the text to make it easier to follow the steps on your computer, but the post is an enjoyable read and provides additional background.
+
+### First we need to load our 23andMe data
+
+```{r}
+# Load Files 
+mySNPs <- read_tsv("data/23andMe_complete.txt", comment = '#',
+col_types = 
+  cols(
+    rsid = col_character(),
+    chromosome = col_factor(),
+    position = col_integer(),
+    genotype = col_factor()
+  ))
+```
+
+As we have seen this file holds just the rsid, position, chromosome and genotype
+
+```{r}
+head(mySNPs)
+```
+
+Using `tidyverse` we can filter the data.
+
+```{r}
+filter(mySNPs, rsid == "rs174537")
+```
+
+Not so exciting, but we can also use our rsid to link to [NHGRI-EBI Catalog of published genome-wide association studies](https://www.ebi.ac.uk/gwas/home)
+
+### `gwascat`: structuring and querying the NHGRI GWAS catalog
+
+[`gwascat`](https://bioconductor.org/packages/release/bioc/html/gwascat.html) is an R packackage for working with the NHGRI-EBI Catalog of published genome-wide association studies. 
+
+To get the catalog into a R data frame.
+
+```{r, eval=FALSE}
+updated_gwas_data <- as.data.frame(makeCurrentGwascat())
+```
+
+Save table in case of internet issues
+```{r, eval=FALSE}
+write_tsv(updated_gwas_data, "data/updated_gwas_data.tsv") 
+```
+
+Save table in case of internet issues
+```{r}
+updated_gwas_data <- read_tsv("data/updated_gwas_data.tsv")
+```
+
+To find the date of the most recent study
+
+```{r}
+max(updated_gwas_data$DATE.ADDED.TO.CATALOG)
+```
+
+To get the most recent studies
+
+```{r}
+last_update <- max(updated_gwas_data$DATE.ADDED.TO.CATALOG)
+filter(updated_gwas_data, DATE.ADDED.TO.CATALOG == last_update) %>% select(STUDY) %>% distinct()
+```
+
+To find the link on Pubmed to those studies
+
+```{r}
+filter(updated_gwas_data, DATE.ADDED.TO.CATALOG == last_update) %>% select(LINK) %>% distinct()
+```
+
+
+### Joining mySNPs with the updated gwas data
+
+The GWAS data lists each SNP (e.g. “rs9302874”) in a field called SNPS. Our imported 23andme data has the same info in the rsid field. Hence we can do a simple join, here using the dplyr library.
+
+```{r}
+mySNPs_gwas_table <- inner_join(mySNPs, updated_gwas_data, by = c("rsid" = "SNPS"))
+```
+
+Note the consequences of the inner join here. 23andme analyses SNPs that don’t appear in this GWAS database, and the GWAS database may contain SNPs that 23andme doesn’t provide for you. In either case, these will be removed in the above file result. There’ll just be rows for SNPs that 23andme does provide you, and that do have an entry in the GWAS database.
+
+Also, the GWAS database may have several rows for a single SNP. It could be that several studies examined a single SNP, or that one study found many traits potentially associated with a SNP. This means your final “output_data” table above will have many rows per for some SNPs.
+
+How shall we narrow down this data-mass to find something potentially interesting?
+
+There are many fields in the GWAS database you might care about – the definitions being listed here. For us amateur folks here, DISEASE.TRAIT and STRONGEST.SNP.RISK.ALLELE might be of most interest.
+
+DISEASE.TRAIT gives you a genericish name for the trait that a study investigated whether there was an association with a given SNP (e.g. “Plasma omega-3 polyunsaturated fatty acid levels”, or “Systolic blood pressure”). Note that the values are not actually all “diseases” by the common-sense meaning – unless you consider traits like being tall a type of illness anyway.
+
+STRONGEST.SNP.RISK.ALLELE gives you the specific allele of the SNP that was “most strongly” associated with that trait in the study (or potentially a ? if unknown, but let’s ignore those for now). The format here is to show the name of the SNP first, then append a dash and the allele of interest afterwards e.g. “rs10787517-A” or “rs7977462-C”.
+
+Back to an exploration of your genome – the two most obvious approaches that come to mind are either: 1) check whether your 23andme results suggest an association with a specific trait you’re interested in, or 2) check which traits your results may be associated with.
+
+In either case, it’ll be useful to create a field that highlights whether your 23andme results indicate that you have the “strongest risk allele” for each study. This is one way to help narrow down towards the interesting traits you may have inherited.
+
+The 23andme part of of your dataframe contains your personal allele results in the genotype field. There you’ll see entries like “AC” or “TT”. What we really want to do here is, for every combination of SNP and study, check to see if either of the letters in your genotype match up with the letter part of the strongest risk allele.
+
+One method would be to separate out your “genotype” data field into two individual allele fields (so “AC” becomes “A” and “C”). Next, clean up the strongest risk allele so you only have the individual allele (so “rs10787517-A”  becomes “A”). Finally check whether either or both of your personal alleles match the strongest risk allele. If they do, there might be something of interest here.
+
+The below code will cover this.
+
+```{r}
+mySNPs_gwas_table$risk_allele_clean <- str_sub(mySNPs_gwas_table$STRONGEST.SNP.RISK.ALLELE, -1)
+mySNPs_gwas_table$my_allele_1 <- str_sub(mySNPs_gwas_table$genotype, 1, 1)
+mySNPs_gwas_table$my_allele_2 <- str_sub(mySNPs_gwas_table$genotype, 2, 2)
+mySNPs_gwas_table$have_risk_allele_count <- if_else(mySNPs_gwas_table$my_allele_1 == mySNPs_gwas_table$risk_allele_clean, 1, 0) + if_else(mySNPs_gwas_table$my_allele_2 == mySNPs_gwas_table$risk_allele_clean, 1, 0)
+```
+
+Now you have your two individual alleles stored in my_allele_1 and my_allele_2, and the allele for the “highest risk” stored in risk_allele_clean. Risk_allele_clean is the letter part of the GWAS STRONGEST.SNP.RISK.ALLELE field. And finally, the have_risk_allele_count is either 0, 1 or 2 depending on whether your 23andme genotype result at that SNP contains 0, 1 or 2 of the risk alleles.
+
+The previously mentioned DISEASE.TRAIT field contains a summary of the trait involved. So by filtering your dataset to only look for studies about a trait you care about, you can see a summary of the risk allele and whether or not you have it, and the relevant studies that elicited that connection.
+
+For example, let’s assume that by now we also inevitably developed a strong interest in omegas and fatty acids. Which SNPs may relate to that topic, and do we personally have the risk allele for any of them?
+
+We can use the str_detect function of the stringr library in order to search for any entries that contain the substring “omega” or “fatty acid”.
+
+```{r}
+select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, risk_allele = risk_allele_clean, your_geneotype = genotype) %>% 
+ filter(str_detect(tolower(DISEASE.TRAIT), "omega") | str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
+ distinct()
+```
+
+To find out if a particular allele is associated with other traits
+
+```{r}
+ select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, STUDY) %>% 
+ filter(!str_detect(tolower(DISEASE.TRAIT), "omega") & !str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
+ distinct() %>%
+ filter(rsid == "rs174537")
+```
+
+Now onto the second approach – this time, you don’t have a specific trait in mind. You’re more interested in discovering which traits have risk alleles that match the respective part of your genome. 
+
+We already have our have_risk_allele_count field. If it’s 1 or 2 then you have some sort of match. So, the full list of your matches and the associated studies could be retrieved in a manner like this.
+
+```{r}
+filter(mySNPs_gwas_table, have_risk_allele_count >= 1) %>%
+ select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
+```
+
+Note that this list is likely to be long. Some risk alleles are very common in some populations, and remember that there may be many studies that relate to a single SNP, or many SNPs referred to by a single study. You might want to pop it in a nice DT Javascript DataTable to allow easy searching and sorting.
+
+```{r}
+datatable(
+ filter(mySNPs_gwas_table, have_risk_allele_count >= 1) %>%
+ select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
+)
+```
+
+
+There are various other fields in the GWAS dataset you might consider using to filter down further. For example, you might be most interested in findings from studies that match your ethnicity, or occasions where you have risk alleles that are rare within the population. After all, we all like to think we’re special snowflakes, so if 95% of the general population have the risk allele for a trait, then that may be less interesting than one where you are in the lucky or unlucky 1%.
+
+For the former, you might try searching within the INITIAL.SAMPLE.SIZE or REPLICATION.SAMPLE.SIZE fields, which has entries like: “272 Han Chinese ancestry individuals” or “1,180 European ancestry individuals from ~475 families”.
+
+Similar to the caveats on searching the trait fields, one does need to be careful here if you’re looking for a comprehensive set of results. Some entries in the database have blanks in one of these fields, and others don’t specify ethnicities, having entries like “Up to 984 individuals”.
+
+For the proportion of the studied population who had the risk allele, it’s the RISK.ALLELE.FREQUENCY field. Again, this can sometimes be blank or zero. But in theory, where it has a valid value, then, depending on the study design, you might find that lower frequencies are rarer traits.
+
+We can use dplyr‘s arrange and filter functions to sort do the above sort of narrowing-down. For example: what are the top 10 trait / study / SNP combinations you have the risk allele for that were explicitly studied within European folk, ordered by virtue of them having the lowest population frequencies reported in the study?
+
+```{r}
+datatable(
+ filter(mySNPs_gwas_table,have_risk_allele_count > 0 & (str_detect(tolower(INITIAL.SAMPLE.SIZE), "european") | str_detect(tolower(REPLICATION.SAMPLE.SIZE), "european")) & (RISK.ALLELE.FREQUENCY > 0 & !is.na(RISK.ALLELE.FREQUENCY))) %>%
+ arrange(RISK.ALLELE.FREQUENCY) %>%
+ select(rsid, your_genotype = genotype, DISEASE.TRAIT, INITIAL.SAMPLE.SIZE,RISK.ALLELE.FREQUENCY)
+ )
+```
+
+Or perhaps you’d prefer to prioritise the order of the traits you have the risk allele for, for example, based on the number of entries in the GWAS database for that trait where the highest risk allele is one you have. You might argue that these could be some of the most reliably associated traits, in the sense that they would bias towards those that have so far been studied the most, at least within this database.
+
+```{r, fig.width=10, fig.height=16}
+trait_entry_count <- group_by(mySNPs_gwas_table, DISEASE.TRAIT) %>%
+ filter(have_risk_allele_count >= 1) %>%
+ summarise(count_of_entries = n())
+
+ggplot(filter(trait_entry_count, count_of_entries > 100), aes(x = reorder(DISEASE.TRAIT, count_of_entries, sum), y = count_of_entries)) +
+ geom_col() +
+ coord_flip() +
+ theme_bw() +
+ labs(title = "Which traits do you have the risk allele for\nthat have over 100 entries in the GWAS database?", y = "Count of entries", x = "Trait")
+```
+
+
+Now, as we’re counting combinations of studies and SNPs per trait here, this is obviously going to be somewhat self-fulfilling as some traits have been featured in way more studies than others. Likewise some traits may have been associated with many more SNPs than others. Also, recalling that many interesting traits seem to be related to a complex mix of SNPs, each of which may only have a tiny effect size, it might be that whilst you do have 10 of the risk alleles for condition X, you also don’t have the other 20 risk alleles that we discovered so far have an association (let alone the 100 weren’t even publish on yet and hence aren’t in this data!).
+
+Maybe then we can sort our output in a different way. How about we count the number of distinct SNPs where you have the risk allele, and then express those as a proportion of the count of all the distinct SNPs for the given trait in the database, whether not you have the risk allele? This would let us say things such as, based (solely) on what in this database, you have 60% of the known risk alleles associated with this trait.
+
+One thing noted in the data, both the 23andme genome data and the gwascat highest risk allele have unusual values in the allele fields – things like ?, -, R, D, I and some numbers based on the fact the “uncleaned” STRONGEST.SNP.RISK.ALLELE didn’t have a -A, -C, -G or -T at the end of the SNP it named. Some of these entries may be meaningful – for example the D and I in the 23andme data refer to deletes and insertions, but won’t match up with anything in the gwascat data. Others may be more messy or missing data, for example 23andme reports “–” if no genotype result was provided for a specific SNP call.
+
+In order to avoid these inflating the proportion’s denominator we’ll just filter down so that we only consider entries where our gwascat-derived “risk_allele_clean” and  23andme-derived “my_allele_1” and “my_allele_2″ are all one of the standard A, C, G or T bases.
+
+Let’s also colour code the results by the rarity of the SNP variant within the studied population. That might provide some insight to exactly what sort of special exception we are as an individual – although some of the GWAS data is missing that field and basic averaging won’t necessarily give the correct weighting, so this part is extra…”directional”.
+
+You are no doubt getting bored with the sheer repetition of caveats here – but it is so important. Whilst these are refinements of sorts, they are simplistic and flawed and you should not even consider concluding something significant about your personal health without seeking professional advice here. This is fun only. Well, for for those of us who could ever possibly classify data as fun anyway.
+
+Here we go, building it up one piece at a time for clarity of some kind:
+
+```{r, fig.width=10, fig.height=20}
+# Summarise proportion of SNPs for a given trait where you have a risk allele
+
+trait_snp_proportion <-  filter(mySNPs_gwas_table, risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
+mutate(you_have_risk_allele = if_else(have_risk_allele_count >= 1, 1, 0)) %>%
+ group_by(DISEASE.TRAIT, you_have_risk_allele) %>%
+ summarise(count_of_snps = n_distinct(rsid)) %>%
+ mutate(total_snps_for_trait = sum(count_of_snps), proportion_of_snps_for_trait = count_of_snps / sum(count_of_snps) * 100) %>%
+ filter(you_have_risk_allele == 1) %>%
+ arrange(desc(proportion_of_snps_for_trait)) %>%
+ ungroup()
+
+# Count the studies per trait in the database
+
+trait_study_count <- filter(mySNPs_gwas_table, risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
+ group_by(DISEASE.TRAIT) %>%
+ summarise(count_of_studies = n_distinct(PUBMEDID), mean_risk_allele_freq = mean(RISK.ALLELE.FREQUENCY))
+
+# Merge the above together
+
+trait_snp_proportion <- inner_join(trait_snp_proportion, trait_study_count, by = "DISEASE.TRAIT")
+
+# Plot the traits where there were more than 2 studies and you have risk alleles for more than 70% of the SNPs studied
+
+ggplot(filter(trait_snp_proportion, count_of_studies > 1 & proportion_of_snps_for_trait > 70), aes(x = reorder(DISEASE.TRAIT, proportion_of_snps_for_trait, sum), y = proportion_of_snps_for_trait, fill = mean_risk_allele_freq)) +
+ geom_col() +
+ coord_flip() +
+ theme_bw() + 
+ labs(title = "Traits I have more than half of the risk\nalleles studied where > 1 studies involved", 
+ y = "% of SNPs with risk allele", x = "Trait", fill = "Mean risk allele frequency") 
+
+```
+
+## Exercises
+
+Only do these exercises after you have complete the above examples. The questions assume you already have the data objects loaded into R.
+
+### Exercise #1
+
+Use str() to show columns and data types. Which column in `mySNPs_gwas_table` shows the allele frequency in a population? What does it mean if the allele frequncy is high in terms of linkage to disease whose trait is only expressed in 1% of the population.
+
+### Exercise #2
+
+Modify the below code to select for Type 2 Diabtes risk alleles (put the trait of interest in lower case)
+
+```{r, eval=FALSE}
+select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, risk_allele = risk_allele_clean, your_geneotype = genotype) %>% 
+ filter(str_detect(tolower(DISEASE.TRAIT), "omega") | str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
+ distinct()
+```
+
+### Exercise #3
+
+Now modify the above to find which risk alleles that person has for Type 2 diabetes
+
+
+### Exercise #4
+
+Repeat Ex #2 and #3 using a trait of your choice
+
+### Exercise #5
+
+Make a DT table of `trait_snp_proportion` 
+
+### Excerise #6
+
+Make a graph of traits with a risk allele frequency below 0.15 showing the % of SNPs with risk allele
