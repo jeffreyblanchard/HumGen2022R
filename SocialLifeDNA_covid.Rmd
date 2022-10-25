@@ -1,0 +1,240 @@
+---
+title: "Data wrangling, graphing and animating the COVID-19 reporting data"
+output:
+  html_document:
+    toc: true
+    toc_depth : 4
+    theme: united
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+*I recognize, and fully understand, that this data maybe emotionally difficult to work. My intention is to make these lab relevant, allowing you to gather your own insights directly from new visualizations of the data. 
+
+## Learning Objectives
+
+* Understanding the sources of SARS-CoV-2 incidence reports
+* Accessing data remotely
+* Wide and long table formats
+* More data visualization with ggpl02
+* Animation
+
+## Visualizing COVID-19 cases, deaths and recoveries
+
+The virus has been recently renamed based on phylogenetic analysis severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). The disease caused by the virus is coronavirus disease (COVID-19). In this lab we will work with reporting data on COVID-19 cases, deaths and recoveries. 
+
+### Introduction to JHU case tracking data
+
+Researchers (Ensheng Dong, Hongru Du, Lauren Gardner) at John Hopkins University developed an [interactive dashboard](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) to visual data and track reported cases of coronavirus disease 2019 (SARS-CoV-2) in real time. The underlying data is collated from the following sources and updated several times a day.
+
+It is important to understand that this data is only as accurate as the reporting and many cases of the disease go unreported because of a lack of testing. This some countries may have have confirmed cases because of more comprehensive testing. Thus, the reporting data represent a minimum number of cases. See recent posts and an article by UMass statistician [Prof. Nick Reich](https://twitter.com/reichlab)
+
+JHU researchers make data that goes into the [dashboard](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) available on [Github repo for Novel Coronavirus (COVID-19) Cases](https://github.com/CSSEGISandData/COVID-19). In this lab we will work with this data. 
+
+Let's take a look at the files and the structure of data in the files.
+
+* csse_covid_19_data
+  + csse_covid_19_daily_reports
+    - 03-11-2020.csv
+    
+Open up the file to look at the structure 
+    
+The file contains the columns 
+
+Province/State 	Country/Region 	Last Update 	Confirmed 	Deaths 	Recovered 	Latitude 	Longitude
+
+It is important to note that for some countries there is only one row, while for others (e.g. China and US) there are multiple rows representing different provinces or states. Thus, we will need to sum these rows to get a total count for the US and China when we make graphs. From experience in making this tutorial I know the Column names with __/__ will cause errors in ggplot (). 
+
+## On the Computer
+
+### Let's start by installing the R packages we need today (you only need to do this once). In the menu bar select `Tools` then `Install Packages` and then search for the packages below.  Install them with their dependencies. (this may take a while)
+
+ * `tidyverse`
+ * `lubridate` 
+ * `gganimate`
+ * `transformr`
+ * `gifski`
+
+### Loading the libraries
+
+After you have installed the packages you need to load the libraries for them.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+library(transformr)
+library(gifski)
+```
+
+
+### Data Wrangling
+
+We can download the data directly from the site. Each time we do this it checks for the most current version.
+
+```{r, message=FALSE}
+time_series_confirmed <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")) %>%
+  rename(Province_State = "Province/State", Country_Region = "Country/Region") 
+```
+
+As noted above this data is in wide format. To convert to long format
+
+```{r, message=FALSE}
+time_series_confirmed_long <- time_series_confirmed %>% 
+               pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+                            names_to = "Date", values_to = "Confirmed") 
+```
+
+Let's also change the format of Date to something that is easier to work with in graphs
+
+```{r, message=FALSE}
+time_series_confirmed_long$Date <- mdy(time_series_confirmed_long$Date)
+```
+
+
+
+### Making Graphs from the time series data
+
+To make a times series graph of the confirmed cases we need to summarize the Country date to count up the individual state data for the US. 
+
+```{r, message=FALSE}
+time_series_confirmed_long%>% 
+  group_by(Country_Region, Date) %>% 
+  summarise(Confirmed = sum(Confirmed)) %>% 
+  filter (Country_Region == "US") %>% 
+  ggplot(aes(x = Date,  y = Confirmed)) + 
+    geom_point() +
+    geom_line() +
+    ggtitle("US COVID-19 Confirmed Cases")
+```
+
+Now several countries on the same graph
+
+```{r, message=FALSE}
+time_series_confirmed_long %>% 
+    group_by(Country_Region, Date) %>% 
+    summarise(Confirmed = sum(Confirmed)) %>% 
+    filter (Country_Region %in% c("China","France","Italy", 
+                                "Korea, South", "US")) %>% 
+    ggplot(aes(x = Date,  y = Confirmed, color = Country_Region)) + 
+      geom_point() +
+      geom_line() +
+      ggtitle("COVID-19 Confirmed Cases")
+```
+
+The above graphs using the cumulative counts. Let's make a new table with the daily counts using the tidverse/dyplr [lag](https://dplyr.tidyverse.org/reference/lead-lag.html) function which subtracts a row from the previous row.
+
+```{r, message=FALSE}
+time_series_confirmed_long_daily <-time_series_confirmed_long %>% 
+    group_by(Country_Region, Date) %>% 
+    summarise(Confirmed = sum(Confirmed)) %>% 
+    mutate(Daily = Confirmed - lag(Confirmed, default = first(Confirmed )))
+```
+
+Now for a graph with the US data
+
+
+```{r, message=FALSE}
+time_series_confirmed_long_daily %>% 
+    filter (Country_Region == "US") %>% 
+    ggplot(aes(x = Date,  y = Daily, color = Country_Region)) + 
+      geom_point() +
+      ggtitle("COVID-19 Confirmed Cases")
+```
+
+A line graph version of the above
+
+```{r, message=FALSE}
+time_series_confirmed_long_daily %>% 
+    filter (Country_Region == "US") %>% 
+    ggplot(aes(x = Date,  y = Daily, color = Country_Region)) + 
+      geom_line() +
+      ggtitle("COVID-19 Confirmed Cases")
+```
+
+
+      
+## Animated Graphs with gganimate
+
+Animated graphs when down right have a great visual impact. You can do this in R and have your animations embedded on your web page. Essentially gganimate creates a series of files that are encompassed in a gif file. In addition to having this gif as part of your report file, you can save the gif and use in a slide or other presentations. It just takes a few lines of code to covert and existing ggplot graph into an animation. See [Tutorial for Getting Started with gganimate](https://gganimate.com/articles/gganimate.html) and
+[gganimate: How to Create Plots with Beautiful Animation in R](https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/)
+
+This are some important gganimate functions:
+
+* __transition_*()__ defines how the data should be spread out and how it relates to itself across time.
+* __view_*()__ defines how the positional scales should change along the animation.
+* __shadow_*()__ defines how data from other points in time should be presented in the given point in time.
+*  __enter_*()/exit_*()__ defines how new data should appear and how old data should disappear during the course of the animation.
+* __ease_aes()__ defines how different aesthetics should be eased during transitions.
+
+### Creating the animations
+
+Below are the packages I installed. There may be others that you need, in particular to rendering gifs. Several people needed to install the packages __gifski__ and __av__ Some of the examples may take several minutes to create the animation.
+
+```{r, warnings=FALSE, message=FALSE}
+library(gganimate)
+library(transformr)
+library(gifski)
+theme_set(theme_bw())
+```
+
+An animation of the confirmed cases in select countries
+
+```{r, warnings=FALSE, message=FALSE}
+daily_counts <- time_series_confirmed_long_daily %>% 
+      filter (Country_Region == "US")
+p <- ggplot(daily_counts, aes(x = Date,  y = Daily, color = Country_Region)) + 
+        geom_point() +
+        ggtitle("Confirmed COVID-19 Cases") +
+        geom_point(aes(group = seq_along(Date))) +
+        transition_reveal(Date)
+# make the animation
+animate(p, renderer = gifski_renderer(), end_pause = 15)
+```
+
+You can change the output to a gif file that can be used in slide presentations or a tweet. After you make the gif set EVAL=FALSE in your report so that it doesn't recreate the gif (this takes a fair amount of time) each time you Knit. 
+
+```{r, eval=FALSE, warnings=FALSE, message=FALSE}
+anim_save(animation = p, "daily_counts_US.gif")
+```
+
+Download the covid deaths data and reformat as we did above
+
+```{r, warnings=FALSE, message=FALSE}
+# This download may take about 5 minutes. You only need to do this once so set eval=false in your Rmd file
+time_series_deaths_confirmed <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")) %>%
+  rename(Province_State = "Province/State", Country_Region = "Country/Region") 
+
+time_series_deaths_long <- time_series_deaths_confirmed %>% 
+    pivot_longer(-c(Province_State, Country_Region, Lat, Long),
+        names_to = "Date", values_to = "Confirmed") 
+
+time_series_deaths_long$Date <- mdy(time_series_deaths_long$Date)
+```
+
+Now for the animation
+
+```{r}
+p <- time_series_deaths_long %>%
+  filter (Country_Region %in% c("US","Canada", "Mexico","Brazil","Egypt","Ecuador","India", "Netherlands", "Germany", "China" )) %>%
+  ggplot(aes(x=Country_Region, y=Confirmed, color= Country_Region)) + 
+    geom_point(aes(size=Confirmed)) + 
+    transition_time(Date) + 
+    labs(title = "Cumulative Deaths: {frame_time}") + 
+    ylab("Deaths")
+# make the animation
+animate(p, renderer = gifski_renderer(), end_pause = 15)
+```
+
+## Things to try
+
+* Instead of making a graph of 5 countries on the same graph as in the above example, use `facet_wrap` with `scales="free_y"` as we did in lab 4.
+* Using the daily count of confirmed cases, make a single graph with 5 countries of your choosing.
+* Plot the cumulative deaths in the US, Canada and Mexico
+* Make the same graph as above with the daily deaths. Use a generalized additive model (GAM) `gam` for making the graph.
+* Make a graph with the countries of your choice using the daily deaths data
+* Make an animation of your choosing (do not use a graph with geom_smooth)
+
+
+
