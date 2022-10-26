@@ -1,0 +1,45 @@
+---
+title: "Human Genome Analysis Lab 8 : Analysis of SNP data using SNPedia and Promethease"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
+---
+
+## Learning Objectives
+
+* View information from a personal genetic test from the perspective of the rsID
+* To understand the concepts of Magnitute and Repute in scoring the effect of a SNP
+
+## Background
+
+###  SNP Analysis using SNPedia 
+
+In this lab we will look SNP data from the perspective of [SNPedia](https://www.snpedia.com/). The project is described more fully in this publication [SNPedia: a wiki supporting personal genome annotation, interpretation and analysis](https://academic.oup.com/nar/article/40/D1/D1308/2903412). SNPedia is a MediaWiki site with information on SNP data. Much of the information is reformatted from [NCBI's dbSNP database](https://www.ncbi.nlm.nih.gov/snp/) based on the Reference SNP ID (rs#). This is the rs# that you have already seen in the 23andMe data files you have been working with. "dbSNP contains population-specific frequency and genotype data, experimental conditions, molecular context, and mapping information for both neutral variations and clinical mutations". The rs# cand be used to link to genome wide association studies(GWAS) and other information.  SNPedia creates ‘rs-pages’ "defining individual SNPs with genotype-specific pages are primarily only created for variants that have significant medical or genealogical consequences based on published meta-analyses, studies of at least 500 patients or two or more independent studies (i.e. replicated findings), or other historic, statistical or medical significance.
+
+The are two concepts implemented in SNPedia that are used to sort an individual's personal genetic testing results. The first is [Magnitude](https://www.snpedia.com/index.php/Magnitude). Magnitude is a subjective measure given to a result by the curators of SNPedia. It generally varies from 0 to 10. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(DT)
+magnitude <- read_tsv("data/SNPedia_magnitude.tsv")
+datatable(magnitude)
+```
+
+The second concept is [Repute](https://www.snpedia.com/index.php/Repute). This is a perspective applied to a (single) genotype, and it can be either Good, Bad, or Not Set (blank). "'Good' and 'Bad' are mostly self explanatory. However, it's worth stating that many genotypes have a bit of good and a bit of bad. These and many other genotypes should remain 'Not Set'. Sometimes that's because they're not distinctly Good or Bad (like eye color) or Ancestry, but usually it means no human has come along to do the classification yet. Often this is the right thing to do, because the published studies are still too new and unreplicated to be convincing."
+
+### Generating of a personal genetic test using Promethease
+
+[Promethease](https://www.promethease.com) builds a personal DNA report based on connecting a file of DNA genotypes in SNPedia. If have your data back you can upload it in Promethease (this will cost $12) or else you can use the Promethease results provided on Moodle. The Promethease site includes a short tutorial - and information on “How to read a Promethease Report”. You are not required to use this service for this class, but if you do you are welcome to include it in your final report. 
+
+## Exercise
+
+There are Promethease results from Person A and Person B on the Moodle site. Download the zip files and place in separate folders (e.g. Promethease A and B). They unzip/decompress. If you have Windows you may need to download a software package to unzip the file - https://www.wikihow.com/Open-a-.Zip-File-Without-Winzip
+
+Discuss the concepts of Magnitude and Repute. Do you agree with using these concepts in a genetic testing report? How might you change or create a different system to highlight particular results. Write a report to a person who just recieved their Promethease report explaining their results (include good, not set and bad, 3 medical conditions), how they were determined, and how they might act on this information. Include not only medical related SNPs, but some of the popular ones list on the SNPedia page. You can substitute the data set you will use in the final report, but please do not include names of the person who kit is used in your report. There is no code to upload for this lab, but write the report in rMarkdown and knit to produce the html file to upload onto Moodle.
+
+__Note__
+In 2019 MyHeritage bought Promethease and SNPedia - https://blog.myheritage.com/2019/09/myheritage-acquires-promethease-and-snpedia/. I assume the eventually plan is to incorporate them into the DNA reports they provide to their users, but I haven't seen this feature released yet.
+

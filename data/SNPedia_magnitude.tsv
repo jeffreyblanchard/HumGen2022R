@@ -1,0 +1,10 @@
+Magnitude 	Description
+0 	You have the common genotype, for which nothing interesting is known.
+0.1 	You have the common genotype, but its interesting that this varies for others
+1 	Semi-plausible but not very exciting
+(blank) 	No one has yet assigned a magnitude. Treated as a 1.
+2 	looks interesting enough to be worth reading
+2.1 	hmm, interesting
+3 	Probably worth your time
+4 	Male/Female sex calls, used for QC, anything above this is definitely something you should pay attention to
+10 	Really significant information! 
