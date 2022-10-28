@@ -261,6 +261,19 @@ p <- time_series_deaths_long %>%
 animate(p, renderer = gifski_renderer(), end_pause = 15)
 ```
 
+
+```{r}
+p <- time_series_deaths_long %>%
+  filter (Country_Region %in% c("US","Canada", "Mexico","Brazil","Egypt","Ecuador","India", "Netherlands", "Germany", "China" )) %>%
+  ggplot(aes(x=Country_Region, y=Confirmed, color= Country_Region)) + 
+    geom_point(aes(size=Confirmed)) + 
+    transition_time(Date) + 
+    labs(title = "Cumulative Deaths: {frame_time}") + 
+    ylab("Deaths")
+# make the animation
+animate(p, renderer = gifski_renderer(), end_pause = 15)
+```
+
 ## Exercises
 
 Pay attention to how your graphs look in today's final knitted lab report. You will be docked points if the graphs do not look nice (e.g. overlapping column names, truncated legends, ets.)

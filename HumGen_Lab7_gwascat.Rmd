@@ -201,16 +201,6 @@ filter(mySNPs_gwas_table, have_risk_allele_count >= 1) %>%
  select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
 ```
 
-Note that this list is likely to be long. Some risk alleles are very common in some populations, and remember that there may be many studies that relate to a single SNP, or many SNPs referred to by a single study. You might want to pop it in a nice DT Javascript DataTable to allow easy searching and sorting.
-
-```{r}
-datatable(
- filter(mySNPs_gwas_table, have_risk_allele_count >= 1) %>%
- select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
-)
-```
-
-
 There are various other fields in the GWAS dataset you might consider using to filter down further. For example, you might be most interested in findings from studies that match your ethnicity, or occasions where you have risk alleles that are rare within the population. After all, we all like to think we’re special snowflakes, so if 95% of the general population have the risk allele for a trait, then that may be less interesting than one where you are in the lucky or unlucky 1%.
 
 For the former, you might try searching within the INITIAL.SAMPLE.SIZE or REPLICATION.SAMPLE.SIZE fields, which has entries like: “272 Han Chinese ancestry individuals” or “1,180 European ancestry individuals from ~475 families”.
@@ -222,11 +212,9 @@ For the proportion of the studied population who had the risk allele, it’s the
 We can use dplyr‘s arrange and filter functions to sort do the above sort of narrowing-down. For example: what are the top 10 trait / study / SNP combinations you have the risk allele for that were explicitly studied within European folk, ordered by virtue of them having the lowest population frequencies reported in the study?
 
 ```{r}
-datatable(
  filter(mySNPs_gwas_table,have_risk_allele_count > 0 & (str_detect(tolower(INITIAL.SAMPLE.SIZE), "european") | str_detect(tolower(REPLICATION.SAMPLE.SIZE), "european")) & (RISK.ALLELE.FREQUENCY > 0 & !is.na(RISK.ALLELE.FREQUENCY))) %>%
  arrange(RISK.ALLELE.FREQUENCY) %>%
  select(rsid, your_genotype = genotype, DISEASE.TRAIT, INITIAL.SAMPLE.SIZE,RISK.ALLELE.FREQUENCY)
- )
 ```
 
 Or perhaps you’d prefer to prioritise the order of the traits you have the risk allele for, for example, based on the number of entries in the GWAS database for that trait where the highest risk allele is one you have. You might argue that these could be some of the most reliably associated traits, in the sense that they would bias towards those that have so far been studied the most, at least within this database.
@@ -297,11 +285,11 @@ Only do these exercises after you have complete the above examples. The question
 
 ### Exercise #1
 
-Use str() to show columns and data types. Which column in `mySNPs_gwas_table` shows the allele frequency in a population? What does it mean if the allele frequncy is high in terms of linkage to disease whose trait is only expressed in 1% of the population.
+Use str() to show columns and data types. Which column in `mySNPs_gwas_table` shows the allele frequency in a population? What does it mean if the allele frequency is high in terms of linkage to disease whose trait is only expressed in 1% of the population.
 
 ### Exercise #2
 
-Modify the below code to select for Type 2 Diabtes risk alleles (put the trait of interest in lower case)
+Modify the below code to select for Type 2 Diabetes risk alleles (put the trait of interest in lower case)
 
 ```{r, eval=FALSE}
 select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, risk_allele = risk_allele_clean, your_geneotype = genotype) %>% 
@@ -318,10 +306,6 @@ Now modify the above to find which risk alleles that person has for Type 2 diabe
 
 Repeat Ex #2 and #3 using a trait of your choice
 
-### Exercise #5
-
-Make a DT table of `trait_snp_proportion` 
-
-### Excerise #6
+### Excerise #5
 
 Make a graph of traits with a risk allele frequency below 0.15 showing the % of SNPs with risk allele
