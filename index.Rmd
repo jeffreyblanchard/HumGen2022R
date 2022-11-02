@@ -17,4 +17,4 @@ This is a rendering of hmtl files from the course repository  (https://github.co
 * Lab X1 : [Maps from the COVID-19 reporting data (extra credit for 497, required for 697)](HumGen_LabX1_maps.html)
 * Lab 7 : [Linking 23andME SNPs to the NHGRI-EBI Catalog of published genome-wide association studies](HumGen_Lab7_gwascat.html)
 * Lab 8 : [Analysis of SNP data using SNPedia and Promethease](HumGen_Lab8_promethease.html)
-
+* Lab 9 : [Human Genome Analysis Lab 9: Analysis of transcriptome (RNA-Seq) data](HumGen_Lab9_rnaseq.html)
