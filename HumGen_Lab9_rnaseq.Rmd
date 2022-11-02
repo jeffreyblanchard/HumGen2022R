@@ -105,9 +105,9 @@ The below exercises are based on understanding and adapting code from a tutorial
 
 Read through the [html](https://master.bioconductor.org/packages/release/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html) version of the vignette.
 
-### Exercise 2
+### Exercise 2 
 
-I have included the [R script](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html) in RStudioCloud. If you are doing this on your own computer, download the file rnaseq.R to make sure the vignette runs properly on your computer and so that you can see the steps involved. Note that vignette uses `tidyverse` packages `ggplot2` and `dyplr`, but also makes use of core R plotting packages. 
+I have included the [R script](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html) in RStudioCloud. If you are doing this on your own computer, download the file rnaseq.R to make sure the vignette runs properly on your computer and so that you can see the steps involved. 
 
 ### Exercise 3
 
@@ -115,7 +115,7 @@ Transform the R script that is part of the vignette into a .Rmd file, adding cap
 
 ### Exercise 4
 
-In the `transformplot` section a data frame (df) is created by binding together select columns from data objects `dds`, `vsd` and `rld` that have different transformations of the data. 
+In the `The variance stabilizing transformation and the rlog` 4.2 section a data frame (df) is created by binding together select columns from data objects `dds`, `vsd` and `rld` that have different transformations of the data. 
 
 A. Use `head` to show the names columns after this step.
 
