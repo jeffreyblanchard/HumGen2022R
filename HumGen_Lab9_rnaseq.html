@@ -512,31 +512,44 @@ your computer (you do not need to do this on RStudio Cloud). This
 assumes your have already installed the core Bioconductor (see Lab
 9).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unity users should allocate 12 GB RAM to the JupyterHub server and set time to 4 hrs</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;rnaseqGene&quot;</span>)</span></code></pre></div>
-<p><strong>IMPORTANT</strong> When running the following the first
-time</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;tximeta&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">tximeta</span>(coldata)</span></code></pre></div>
-<p>You may get the following message</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tximeta needs a BiocFileCache directory to access and save TxDb objects.</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Do you wish to use the default directory: &#39;/cloud/home/r555412/.cache/R/BiocFileCache&#39;?</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If not, a temporary directory that is specific to this R session will be used.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># You can always change this directory later by running: setTximetaBFC()</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Or enter [0] to exit and set this directory manually now.</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># This location can also be set by environmental variable TXIMETA_HUB_CACHE. </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Yes (use default)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2: No (use temp)</span></span></code></pre></div>
-<p>Select 1 (Yes)</p>
-<p>Then then a message similar to this may appear</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># /cloud/home/r555412/.cache/R/BiocFileCache</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   does not exist, create directory? (yes/no): </span></span></code></pre></div>
-<p>Select yes</p>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;rnaseqGene&quot;</span>)</span></code></pre></div>
+<p>Unity users may get the following message</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Installation paths not writeable, unable to update packages</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   path: /modules/apps/miniconda/4.8.3/envs/jupyterhub-stable/lib/R/library</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   packages:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     blob, broom, bslib, callr, caret, cli, cluster, commonmark, cpp11, crayon, crul, curl, data.table, DBI, dbplyr, desc, digest, dplyr, dtplyr, e1071, evaluate, farver,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     fontawesome, forcats, foreign, future, future.apply, gargle, generics, ggplot2, glmnet, globals, googlesheets4, gtable, hardhat, haven, hms, htmltools, httpuv, httr,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     ipred, isoband, jsonlite, later, lava, lifecycle, lobstr, maps, MASS, Matrix, mgcv, modelr, nlme, nnet, openssl, parallelly, pbdZMQ, pillar, pkgload, progressr, proxy,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     purrr, quantmod, randomForest, Rcpp, readr, readxl, recipes, reprex, rlang, rmarkdown, rpart, rstudioapi, rvest, sass, scales, shiny, stringi, survival, sys, testthat,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     tibble, tidyr, tidyselect, tidyverse, timeDate, tinytex, uuid, vctrs, viridisLite, vroom, xfun, xts, yaml, zoo</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Old packages: &#39;ade4&#39;, &#39;BiocManager&#39;, &#39;brew&#39;, &#39;chron&#39;, &#39;devtools&#39;, &#39;downlit&#39;, &#39;DT&#39;, &#39;duckdb&#39;, &#39;gert&#39;, &#39;gh&#39;, &#39;gitcreds&#39;, &#39;igraph&#39;, &#39;knitr&#39;, &#39;latticeExtra&#39;, &#39;mapdata&#39;,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   &#39;markdown&#39;, &#39;matrixStats&#39;, &#39;neonUtilities&#39;, &#39;openxlsx&#39;, &#39;processx&#39;, &#39;ps&#39;, &#39;qdapRegex&#39;, &#39;R.methodsS3&#39;, &#39;R.oo&#39;, &#39;R.utils&#39;, &#39;RCurl&#39;, &#39;roxygen2&#39;, &#39;rversions&#39;, &#39;sp&#39;,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> <span class="co">#  &#39;stringdist&#39;, &#39;stringr&#39;, &#39;tm&#39;, &#39;usethis&#39;, &#39;vegan&#39;, &#39;XML&#39;, &#39;zip&#39;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Update all/some/none? [a/s/n]: </span></span></code></pre></div>
+<p>select a</p>
 <p>We will go step wise through a Bioconductor workflow vignette <a href="https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html">RNA-seq
 workflow: gene-level exploratory analysis and differential
 expression</a>. We will start by opening the html file associated with
 the workflow and downloading the R script to our computer.</p>
+<p><strong>IMPORTANT</strong> When running the following the first
+time</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;tximeta&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">tximeta</span>(coldata)</span></code></pre></div>
+<p>You may get the following message</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tximeta needs a BiocFileCache directory to access and save TxDb objects.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Do you wish to use the default directory: &#39;/cloud/home/r555412/.cache/R/BiocFileCache&#39;?</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If not, a temporary directory that is specific to this R session will be used.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># You can always change this directory later by running: setTximetaBFC()</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Or enter [0] to exit and set this directory manually now.</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># This location can also be set by environmental variable TXIMETA_HUB_CACHE. </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Yes (use default)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2: No (use temp)</span></span></code></pre></div>
+<p>Select 1 (Yes)</p>
+<p>Then then a message similar to this may appear</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># /cloud/home/r555412/.cache/R/BiocFileCache</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   does not exist, create directory? (yes/no): </span></span></code></pre></div>
+<p>Select yes</p>
 </div>
 <div id="exercises" class="section level2">
 <h2>Exercises</h2>

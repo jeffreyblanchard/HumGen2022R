@@ -39,9 +39,27 @@ To install the packages and data needed to complete this tutorial on your comput
 
 ```{r, eval=FALSE}
 # Unity users should allocate 12 GB RAM to the JupyterHub server and set time to 4 hrs
-
 BiocManager::install("rnaseqGene")
 ```
+
+Unity users may get the following message
+
+```{r}
+# Installation paths not writeable, unable to update packages
+#   path: /modules/apps/miniconda/4.8.3/envs/jupyterhub-stable/lib/R/library
+#   packages:
+#     blob, broom, bslib, callr, caret, cli, cluster, commonmark, cpp11, crayon, crul, curl, data.table, DBI, dbplyr, desc, digest, dplyr, dtplyr, e1071, evaluate, farver,
+#     fontawesome, forcats, foreign, future, future.apply, gargle, generics, ggplot2, glmnet, globals, googlesheets4, gtable, hardhat, haven, hms, htmltools, httpuv, httr,
+#     ipred, isoband, jsonlite, later, lava, lifecycle, lobstr, maps, MASS, Matrix, mgcv, modelr, nlme, nnet, openssl, parallelly, pbdZMQ, pillar, pkgload, progressr, proxy,
+#     purrr, quantmod, randomForest, Rcpp, readr, readxl, recipes, reprex, rlang, rmarkdown, rpart, rstudioapi, rvest, sass, scales, shiny, stringi, survival, sys, testthat,
+#     tibble, tidyr, tidyselect, tidyverse, timeDate, tinytex, uuid, vctrs, viridisLite, vroom, xfun, xts, yaml, zoo
+# Old packages: 'ade4', 'BiocManager', 'brew', 'chron', 'devtools', 'downlit', 'DT', 'duckdb', 'gert', 'gh', 'gitcreds', 'igraph', 'knitr', 'latticeExtra', 'mapdata',
+#   'markdown', 'matrixStats', 'neonUtilities', 'openxlsx', 'processx', 'ps', 'qdapRegex', 'R.methodsS3', 'R.oo', 'R.utils', 'RCurl', 'roxygen2', 'rversions', 'sp',
+ #  'stringdist', 'stringr', 'tm', 'usethis', 'vegan', 'XML', 'zip'
+# Update all/some/none? [a/s/n]: 
+```
+
+select a
 
 We will go step wise through a Bioconductor workflow vignette [RNA-seq workflow: gene-level exploratory analysis and differential expression](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html). We will start by opening the html file associated with the workflow and downloading the R script to our computer. 
 
