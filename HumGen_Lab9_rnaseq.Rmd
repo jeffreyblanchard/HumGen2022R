@@ -105,7 +105,7 @@ The below exercises are based on understanding and adapting code from a tutorial
 
 Read through the [html](https://master.bioconductor.org/packages/release/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html) version of the vignette.
 
-### Exercise 2 
+### Exercise 2 (only required if you are working on RStudio installed on your computer not on RStudio Cloud or Unity)
 
 I have included the [R script](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html) in RStudioCloud. If you are doing this on your own computer, download the file rnaseq.R to make sure the vignette runs properly on your computer and so that you can see the steps involved. 
 
