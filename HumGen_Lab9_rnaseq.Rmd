@@ -1,0 +1,132 @@
+---
+title: "Human Genome Analysis Lab 9: Analysis of transcriptome (RNA-Seq) data"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+## Learning Objectives
+
+* Understand the basic workflow for RNAseq
+* Data normalization using DESeq
+* Data exploration using PCA, PCO and MDS
+
+## Background
+
+When you are trying to understand a new analysis method, a good strategy is to 
+
+1. Read background material so that you conceptual understand the work flow.
+2. Go through a tutorial and/or R vignette with the tools/packages you will need.
+3. Apply the tutorials/vignettes to your experiment.
+
+Today we will go through steps 1 and 2. For an introduction to RNAseq analysis we will discuss this [Galaxy workflow](https://training.galaxyproject.org/training-material/topics/transcriptomics/tutorials/rb-rnaseq/tutorial.html). The steps involving __read mapping__, __transcript quantification__, and __read counting__ are usually done on a Unix computer using the command line or an interface to a Unix computer such as Galaxy. We will go through these steps in the tutorial and then in a later lab on a Unix virtual machine or the MGHPCC. Today in lab we will work on __differential expression analysis in R__. 
+
+
+## Introduction to a RNA-Seq differential expression workflow
+
+This lab will go through __differential expression analysis in R__ using DESeq2 along with other Bioconductor and core R packages. 
+
+The data used in this workflow is an RNA-Seq experiment of airway smooth muscle cells treated with dexamethasone, a synthetic glucocorticoid steroid with anti-inflammatory effects. Glucocorticoids are used, for example, in asthma patients to prevent or reduce inflammation of the airways. In the experiment, four primary human airway smooth muscle cell lines were treated with 1 micromolar dexamethasone for 18 hours. For each of the four cell lines, we have a treated and an untreated sample. The reference for the experiment is:
+
+Himes BE, Jiang X, Wagner P, Hu R, Wang Q, Klanderman B, Whitaker RM, Duan Q, Lasky-Su J, Nikolos C, Jester W, Johnson M, Panettieri R Jr, Tantisira KG, Weiss ST, Lu Q. "RNA-Seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells." PLoS One. 2014 Jun 13;9(6):e99625. PMID: 24926665. GEO: GSE52778.
+
+To install the packages and data needed to complete this tutorial on your computer (you do not need to do this on RStudio Cloud). This assumes your have already installed the core Bioconductor (see Lab 9).
+
+```{r, eval=FALSE}
+# Unity users should allocate 12 GB RAM to the JupyterHub server and set time to 4 hrs
+
+BiocManager::install("rnaseqGene")
+```
+
+We will go step wise through a Bioconductor workflow vignette [RNA-seq workflow: gene-level exploratory analysis and differential expression](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html). We will start by opening the html file associated with the workflow and downloading the R script to our computer. 
+
+__IMPORTANT__
+When running the following the first time
+```{r, eval=FALSE}
+library("tximeta")
+se <- tximeta(coldata)
+```
+
+You may get the following message
+
+```{r}
+# tximeta needs a BiocFileCache directory to access and save TxDb objects.
+# Do you wish to use the default directory: '/cloud/home/r555412/.cache/R/BiocFileCache'?
+# If not, a temporary directory that is specific to this R session will be used.
+# You can always change this directory later by running: setTximetaBFC()
+# Or enter [0] to exit and set this directory manually now.
+# This location can also be set by environmental variable TXIMETA_HUB_CACHE. 
+
+# 1: Yes (use default)
+# 2: No (use temp)
+```
+
+Select 1 (Yes)
+
+Then then a message similar to this may appear
+```{r}
+# /cloud/home/r555412/.cache/R/BiocFileCache
+#   does not exist, create directory? (yes/no): 
+```
+
+Select yes
+
+
+## Exercises
+
+The below exercises are based on understanding and adapting code from a tutorial "RNA-Seq workflow: gene-level exploratory analysis and differential expression".  The exercises build on your knowledge of base R graphics and ggplot. Go slowly and try to understand each step. Add code chunks for exercises 4- at the end of your .Rmd file with the tutorial code.
+
+* Important note: At the beginning of the Rmd file add the line options(connectionObserver = NULL) within a R code chunk.
+
+### Exercise 1
+
+Read through the [html](https://master.bioconductor.org/packages/release/workflows/vignettes/rnaseqGene/inst/doc/rnaseqGene.html) version of the vignette.
+
+### Exercise 2
+
+I have included the [R script](https://master.bioconductor.org/packages/release/workflows/html/rnaseqGene.html) in RStudioCloud. If you are doing this on your own computer, download the file rnaseq.R to make sure the vignette runs properly on your computer and so that you can see the steps involved. Note that vignette uses `tidyverse` packages `ggplot2` and `dyplr`, but also makes use of core R plotting packages. 
+
+### Exercise 3
+
+Transform the R script that is part of the vignette into a .Rmd file, adding captions and your own notes along the way. This is a good time to __explore__ by changing the vignette code. Note that the workflow in R starts with __2.3 Reading in data with tximeta__. The step previous to this __2.2 Quantifying with Salmon__ is done outside of R on a Unix computer or Galaxy.
+
+### Exercise 4
+
+In the `transformplot` section a data frame (df) is created by binding together select columns from data objects `dds`, `vsd` and `rld` that have different transformations of the data. 
+
+A. Use `head` to show the names columns after this step.
+
+B. To show the information associated with these samples use `colData` on any of the 3 above data objects (similar to a previous step in the tutorial).
+
+C. Use `head` again to show what the titles in df look like after the step `colnames(df)[1:2] <- c("x", "y")`
+
+D. Add x and y labels and a title to the graph showing the comparisions of the two samples with the 3 transformations.
+
+E. Change the comparison to the untreated and dex treated cell line N061011 samples
+
+### Exercise 5
+
+In the section `ggplotpca` change the PCA plot to color the points by cell type and the shape by whether they were treated with dexamethasone. 
+
+### Exercise 6
+
+In the section `airwayDE` DESeq2 uses the Benjamini-Hochberg (BH) adjustment.  If we increase the bar for significance testing to 0.01. How many such genes are there? 
+
+### Exercise 7
+
+Just before the `plotcounts` section significant genes that have the highest fold increase after treatment are shown. Show the significant genes which decrease the most after after treatment
+
+### Exercise 8
+
+In the `genescluster` section. 
+
+A. Modify the graph to show a heat plot from the 50 genes with the highest variance across samples. Are the same hierarchical cluster patterns retained as in the graph with the top 20 genes? 
+
+B. Show the results using the rlog transformation which is in `rld`. What are the differences in patterns between the 2 types of transformations?
+
+
