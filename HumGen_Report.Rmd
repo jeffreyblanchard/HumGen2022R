@@ -1,0 +1,58 @@
+---
+title: "Genetic Testing Report and Presentation"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+    highlight: tango
+---
+
+## Genetic Testing Report
+
+This class has two related final projects, a Genetic Testing Report and Poster Presentation. The content of the reports will be similar, but the audience will be different. For the Genetic Testing Report, it should be targeted towards an audience with little background in genetic testing. You could envision this as the report you would produce for the person being tested and/or to communicate your results to family members and friends. The report is due Friday Dec 16th. It should have the following components.
+
+### 1. Introduction to genetic testing and the underlying technology
+
+You should introduce personal genetic testing and the surrounding issues we have discussed in class. Discuss the underlying technology of how the DNA polymorphisms in your genome are determined.
+
+### 2. My genealogy and family history
+
+This is your genealogy that you put together in Lab 5.  Some students have put together very elaborate trees that more than just for generations of ancestors (e.g including brother and sisters of their ancestors). Other students only have a limited knowledge of their direct ancestors. Remember the report is for your family or friends that might be interested in your history. You should describe what could and could not find out about your family history.
+
+### 3. DNA matches and relatives in the databases
+
+This is the DNA Matches section in Ancestry and Relatives section in 23andMe. Do you have close relatives to 3rd cousins in the databases (100 cm or 1% or higher)? If you were able to go back 4 generations in your family history then these people may share the same great great grandparents or even closer. Discuss how much DNA similarity you would expect for different relations that one or more generations older than you (e.g. if your great aunt was in the database or other older relative was in the database). Based on Lab 8 when would you start having ancestors that you didn't have DNA matches with?
+
+### 4. Ethnicity estimates
+
+Describe your ethnicity results in the context of your genealogical tree. Is this what you expected? Where in your family history might the unknown ethnicities have come in. How can you further test this?
+
+### 5. Older family history based on mitochondrial and Y chromosomes results (only for 23andME kits)
+
+Males have both results while females only have mt haplotype results. Describe your results in the context of what you know about your paternal and maternal lineages. What time frames are they useful for infering ancestry? Discuss the trajectory of your mt and Y haplotypes relative to your other chromosomes. 
+
+### 6. Medically important genotypes
+
+You can use data from 23andMe, gwascat and Promethease (not required). What did you learn about genotypes related to medical information? Where there unexpected results? Discuss the risk factor, magnitude and population frequency. Are there any actions you would recommend based on this information?  Include in your discussion the difference between monogenic (mostly Mendelian) vs polygenic traits. Include tables and graphs of your results using Labs 7, 8 and 11.
+
+### 7. Interesting genotypes
+
+Here you can also data from 23andMe (or Ancestry), gwascat and Promethease (not required) Pick a set of what you consider interesting genotypes that you knew or didn't know you had. Do you think these genotype calls accurately represent the phenotypes you have?
+
+### 8. Recommendations for next steps
+
+What are your recommendations or plans for next steps based on your results. Should you share the results with a medical provider? Do additional testing?
+
+## Presentation
+
+The Presentation is for your peers in this class and thus can focus more on the results than the methods. During the last class session we will break (in Zoom) into three groups. We will use the Zoom share screen tool for the presentations. The presentation will consist of no more than 10 slides presented within 12 minutes with time for questions.
+
+### Guidelines fo Presentations
+
+* Avoid using too many slides. Past presenters have found that 10 slides are a good amount, neither too few nor 
+* Provide clear labels or headings for each section of your presentation.
+* Use bullet points.
+* Remember contrast. Put light-colored fonts on dark backgrounds and dark fonts on light-colored backgrounds so that your viewer can see your text clearly.
+* Imbed high-quality graphics and videos.
+* Avoid hyperlinks. Internet access may not be available during your presentation.
