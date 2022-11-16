@@ -71,5 +71,5 @@ In the [class GitHub repository](https://github.com/jeffreyblanchard/HumGen2022R
 
 ## Exercises
 
-Go through the [Shiny tutorials](https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/). Turn your lesson 5 Shiny app (Census Visualization) into a web page using shinyapps.io, RStudio’s hosting service for Shiny apps.  In Moodle send me a link you your app.
+Go through the [Shiny tutorials](https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/). Turn your lesson 5 Shiny app (Your turn 2 - Census Visualization) into a web page using shinyapps.io, RStudio’s hosting service for Shiny apps.  In Moodle send me a link you your app.  
 
