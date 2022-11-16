@@ -6,8 +6,6 @@ output:
     toc_depth: 4
     theme: united
     highlight: tango
-editor_options: 
-  chunk_output_type: console
 ---
 
 ## IMPORTANT POINTS FOR TODAY'S LAB FOR UNITY USERS
@@ -178,18 +176,20 @@ For example, let’s assume that by now we also inevitably developed a strong in
 We can use the str_detect function of the stringr library in order to search for any entries that contain the substring “omega” or “fatty acid”.
 
 ```{r}
-select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, risk_allele = risk_allele_clean, your_geneotype = genotype) %>% 
- filter(str_detect(tolower(DISEASE.TRAIT), "omega") | str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
- distinct()
+mySNPs_gwas_table %>% 
+  select(rsid, DISEASE.TRAIT, risk_allele = risk_allele_clean, your_geneotype = genotype) %>% 
+  filter(str_detect(tolower(DISEASE.TRAIT), "omega") | str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
+  distinct()
 ```
 
 To find out if a particular allele is associated with other traits
 
 ```{r}
- select(mySNPs_gwas_table, rsid, DISEASE.TRAIT, STUDY) %>% 
- filter(!str_detect(tolower(DISEASE.TRAIT), "omega") & !str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
- distinct() %>%
- filter(rsid == "rs174537")
+mySNPs_gwas_table %>% 
+  select(rsid, DISEASE.TRAIT, STUDY) %>% 
+  filter(!str_detect(tolower(DISEASE.TRAIT), "omega") & !str_detect(tolower(DISEASE.TRAIT), "fatty acid")) %>%
+  distinct() %>%
+  filter(rsid == "rs174537")
 ```
 
 Now onto the second approach – this time, you don’t have a specific trait in mind. You’re more interested in discovering which traits have risk alleles that match the respective part of your genome. 
@@ -197,8 +197,9 @@ Now onto the second approach – this time, you don’t have a specific trait in
 We already have our have_risk_allele_count field. If it’s 1 or 2 then you have some sort of match. So, the full list of your matches and the associated studies could be retrieved in a manner like this.
 
 ```{r}
-filter(mySNPs_gwas_table, have_risk_allele_count >= 1) %>%
- select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
+mySNPs_gwas_table %>% 
+  filter(have_risk_allele_count >= 1) %>%
+  select(rsid, your_genotype = genotype, strongest_risk_allele = risk_allele_clean, DISEASE.TRAIT, STUDY )
 ```
 
 There are various other fields in the GWAS dataset you might consider using to filter down further. For example, you might be most interested in findings from studies that match your ethnicity, or occasions where you have risk alleles that are rare within the population. After all, we all like to think we’re special snowflakes, so if 95% of the general population have the risk allele for a trait, then that may be less interesting than one where you are in the lucky or unlucky 1%.
@@ -212,23 +213,27 @@ For the proportion of the studied population who had the risk allele, it’s the
 We can use dplyr‘s arrange and filter functions to sort do the above sort of narrowing-down. For example: what are the top 10 trait / study / SNP combinations you have the risk allele for that were explicitly studied within European folk, ordered by virtue of them having the lowest population frequencies reported in the study?
 
 ```{r}
- filter(mySNPs_gwas_table,have_risk_allele_count > 0 & (str_detect(tolower(INITIAL.SAMPLE.SIZE), "european") | str_detect(tolower(REPLICATION.SAMPLE.SIZE), "european")) & (RISK.ALLELE.FREQUENCY > 0 & !is.na(RISK.ALLELE.FREQUENCY))) %>%
- arrange(RISK.ALLELE.FREQUENCY) %>%
- select(rsid, your_genotype = genotype, DISEASE.TRAIT, INITIAL.SAMPLE.SIZE,RISK.ALLELE.FREQUENCY)
+mySNPs_gwas_table %>% 
+  filter(have_risk_allele_count > 0 & (str_detect(tolower(INITIAL.SAMPLE.SIZE), "european") |   str_detect(tolower(REPLICATION.SAMPLE.SIZE), "european")) & (RISK.ALLELE.FREQUENCY > 0 & !is.na(RISK.ALLELE.FREQUENCY))) %>%
+  arrange(RISK.ALLELE.FREQUENCY) %>%
+  select(rsid, your_genotype = genotype, DISEASE.TRAIT, INITIAL.SAMPLE.SIZE,RISK.ALLELE.FREQUENCY)
 ```
 
 Or perhaps you’d prefer to prioritise the order of the traits you have the risk allele for, for example, based on the number of entries in the GWAS database for that trait where the highest risk allele is one you have. You might argue that these could be some of the most reliably associated traits, in the sense that they would bias towards those that have so far been studied the most, at least within this database.
 
 ```{r, fig.width=10, fig.height=16}
-trait_entry_count <- group_by(mySNPs_gwas_table, DISEASE.TRAIT) %>%
- filter(have_risk_allele_count >= 1) %>%
- summarise(count_of_entries = n())
+trait_entry_count <- mySNPs_gwas_table %>% 
+  group_by(DISEASE.TRAIT) %>%
+  filter(have_risk_allele_count >= 1) %>%
+  summarise(count_of_entries = n()) 
 
-ggplot(filter(trait_entry_count, count_of_entries > 100), aes(x = reorder(DISEASE.TRAIT, count_of_entries, sum), y = count_of_entries)) +
- geom_col() +
- coord_flip() +
- theme_bw() +
- labs(title = "Which traits do you have the risk allele for\nthat have over 100 entries in the GWAS database?", y = "Count of entries", x = "Trait")
+trait_entry_count %>% 
+  filter(count_of_entries > 100) %>% 
+ggplot(aes(x = reorder(DISEASE.TRAIT, count_of_entries, sum), y = count_of_entries)) +
+  geom_col() +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Which traits do you have the risk allele for\nthat have over 100 entries in the GWAS database?", y = "Count of entries", x = "Trait")
 ```
 
 
@@ -249,35 +254,40 @@ Here we go, building it up one piece at a time for clarity of some kind:
 ```{r, fig.width=10, fig.height=20}
 # Summarise proportion of SNPs for a given trait where you have a risk allele
 
-trait_snp_proportion <-  filter(mySNPs_gwas_table, risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
-mutate(you_have_risk_allele = if_else(have_risk_allele_count >= 1, 1, 0)) %>%
- group_by(DISEASE.TRAIT, you_have_risk_allele) %>%
- summarise(count_of_snps = n_distinct(rsid)) %>%
- mutate(total_snps_for_trait = sum(count_of_snps), proportion_of_snps_for_trait = count_of_snps / sum(count_of_snps) * 100) %>%
- filter(you_have_risk_allele == 1) %>%
- arrange(desc(proportion_of_snps_for_trait)) %>%
- ungroup()
+trait_snp_proportion <- mySNPs_gwas_table %>% 
+  filter(risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
+  mutate(you_have_risk_allele = if_else(have_risk_allele_count >= 1, 1, 0)) %>%
+  group_by(DISEASE.TRAIT, you_have_risk_allele) %>%
+  summarise(count_of_snps = n_distinct(rsid)) %>%
+  mutate(total_snps_for_trait = sum(count_of_snps), proportion_of_snps_for_trait = count_of_snps / sum(count_of_snps) * 100) %>%
+  filter(you_have_risk_allele == 1) %>%
+  arrange(desc(proportion_of_snps_for_trait)) %>%
+  ungroup()
 
 # Count the studies per trait in the database
 
-trait_study_count <- filter(mySNPs_gwas_table, risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
- group_by(DISEASE.TRAIT) %>%
- summarise(count_of_studies = n_distinct(PUBMEDID), mean_risk_allele_freq = mean(RISK.ALLELE.FREQUENCY))
+trait_study_count <- mySNPs_gwas_table %>% 
+  filter(risk_allele_clean %in% c("C" ,"A", "G", "T") & my_allele_1 %in% c("C" ,"A", "G", "T") & my_allele_2 %in% c("C" ,"A", "G", "T") ) %>%
+  group_by(DISEASE.TRAIT) %>%
+  summarise(count_of_studies = n_distinct(PUBMEDID), mean_risk_allele_freq = mean(RISK.ALLELE.FREQUENCY))
 
 # Merge the above together
 
-trait_snp_proportion_study_count <- inner_join(trait_snp_proportion, trait_study_count, by = "DISEASE.TRAIT")
+trait_snp_proportion_study_count  <- inner_join(trait_snp_proportion, trait_study_count, by = "DISEASE.TRAIT")
 
 # Plot the traits where there were more than 2 studies and you have risk alleles for more than 70% of the SNPs studied
 
-ggplot(filter(trait_snp_proportion_study_count , count_of_studies > 1 & proportion_of_snps_for_trait > 70), aes(x = reorder(DISEASE.TRAIT, proportion_of_snps_for_trait, sum), y = proportion_of_snps_for_trait, fill = mean_risk_allele_freq)) +
- geom_col() +
- coord_flip() +
- theme_bw() + 
- labs(title = "Traits I have more than half of the risk\nalleles studied where > 1 studies involved", 
- y = "% of SNPs with risk allele", x = "Trait", fill = "Mean risk allele frequency") 
+trait_snp_proportion_study_count %>% 
+  filter(count_of_studies > 1 & proportion_of_snps_for_trait > 70) %>% 
+ggplot(aes(x = reorder(DISEASE.TRAIT, proportion_of_snps_for_trait, sum), y = proportion_of_snps_for_trait, fill = mean_risk_allele_freq)) +
+  geom_col() +
+  coord_flip() +
+  theme_bw() + 
+  labs(title = "Traits I have more than half of the risk\nalleles studied where > 1 studies involved", 
+  y = "% of SNPs with risk allele", x = "Trait", fill = "Mean risk allele frequency") 
 
 ```
+
 
 ## Exercises
 
