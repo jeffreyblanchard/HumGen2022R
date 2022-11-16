@@ -203,6 +203,16 @@ This are some important gganimate functions:
 
 Below are the packages I installed. There may be others that you need, in particular to rendering gifs. Several people needed to install the packages __gifski__ and __av__ Some of the examples may take several minutes to create the animation.
 
+* On Unity the following packages need to be loaded before `gifski` or `transformr` can be installed or their libraries loaded.  If have you already have installed this packages on Unity and you get a message to install them...ingore it. This step is require to load the unix software required to install and run these packages
+
+```{r, eval=FALSE}
+library("unitymodule")
+unity_r_module("r-udunits2/0.13.2")
+library("udunits2")
+unity_r_module("r-sf")
+library("sf")
+```
+
 ```{r, warnings=FALSE, message=FALSE}
 library(gganimate)
 library(transformr)
