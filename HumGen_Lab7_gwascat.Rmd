@@ -266,11 +266,11 @@ trait_study_count <- filter(mySNPs_gwas_table, risk_allele_clean %in% c("C" ,"A"
 
 # Merge the above together
 
-trait_snp_proportion <- inner_join(trait_snp_proportion, trait_study_count, by = "DISEASE.TRAIT")
+trait_snp_proportion_study_count <- inner_join(trait_snp_proportion, trait_study_count, by = "DISEASE.TRAIT")
 
 # Plot the traits where there were more than 2 studies and you have risk alleles for more than 70% of the SNPs studied
 
-ggplot(filter(trait_snp_proportion, count_of_studies > 1 & proportion_of_snps_for_trait > 70), aes(x = reorder(DISEASE.TRAIT, proportion_of_snps_for_trait, sum), y = proportion_of_snps_for_trait, fill = mean_risk_allele_freq)) +
+ggplot(filter(trait_snp_proportion_study_count , count_of_studies > 1 & proportion_of_snps_for_trait > 70), aes(x = reorder(DISEASE.TRAIT, proportion_of_snps_for_trait, sum), y = proportion_of_snps_for_trait, fill = mean_risk_allele_freq)) +
  geom_col() +
  coord_flip() +
  theme_bw() + 
