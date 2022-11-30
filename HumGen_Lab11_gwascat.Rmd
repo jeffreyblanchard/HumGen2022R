@@ -1,0 +1,266 @@
+---
+title: "Human Genome Analysis Lab 11 : Analysis and visualization of your SNP data - Part 2"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: united
+    highlight: tango
+    code_folding: hide
+---
+
+## IMPORTANT POINTS FOR TODAY'S LAB FOR UNITY USERS
+
+1. `bioconductor` and `gwascat` take a long time to install (20-30 min). 
+2. The GWAS catalog is getting very large (~250 MB) and difficult to download with intermittent or not fast internet connections. FOR UNITY USERS it is available on Moodle (Github doesn't allow files greater than 100 MB). Put it in your `data` folder. 
+
+## Learning objectives
+
+* Mapping your 23andMe and Ancestry SNP data to phenotypes and the literature using gwascat
+* Using GGBIO to map your SNPs
+* Creating Manhattan Plots
+
+### Libraries for today's lab. 
+
+Note if you are working on your own computer (and not RStudio Cloud) you will need to install Bioconductor before installing `gwascat`.
+
+```{r, message = FALSE}
+# Load Libraries
+library(tidyverse)
+library(DT)
+library(gwascat)
+library(ggtext)
+library(ggbio)
+library(GenomicRanges)
+data("CRC", package = "biovizBase")
+```
+
+### First load 23andMe or Ancestry data
+
+```{r}
+# Load Files 
+mySNPs <- read_tsv("data/23andMe_complete.txt", comment = '#',
+col_types = 
+  cols(
+    rsid = col_character(),
+    chromosome = col_factor(),
+    position = col_integer(),
+    genotype = col_factor()
+  ))
+```
+
+As we have seen this file holds just the rsid, position, chromosome and genotype
+
+```{r}
+head(mySNPs)
+```
+
+### Upload the gwas data table
+```{r}
+updated_gwas_data <- read_tsv("data/updated_gwas_data.tsv")
+```
+
+#### YOU DO NOT NEED TO DO THE NEXT STEP FOR LAB, but To get the most recent data set
+
+To get the catalog into a R data frame.
+
+```{r, eval=FALSE}
+updated_gwas_data <- as.data.frame(makeCurrentGwascat())
+```
+
+Save table in case of internet issues
+```{r, eval=FALSE}
+write_tsv(updated_gwas_data, "data/updated_gwas_data.tsv") 
+```
+
+### Joining mySNPs with the updated gwas data
+
+```{r}
+mySNPs_gwas_table <- inner_join(mySNPs, updated_gwas_data, by = c("rsid" = "SNPS"))
+```
+
+Add columns for your alleles
+
+```{r}
+mySNPs_gwas_table$risk_allele_clean <- str_sub(mySNPs_gwas_table$STRONGEST.SNP.RISK.ALLELE, -1)
+mySNPs_gwas_table$my_allele_1 <- str_sub(mySNPs_gwas_table$genotype, 1, 1)
+mySNPs_gwas_table$my_allele_2 <- str_sub(mySNPs_gwas_table$genotype, 2, 2)
+mySNPs_gwas_table$have_risk_allele_count <- if_else(mySNPs_gwas_table$my_allele_1 == mySNPs_gwas_table$risk_allele_clean, 1, 0) + if_else(mySNPs_gwas_table$my_allele_2 == mySNPs_gwas_table$risk_allele_clean, 1, 0)
+```
+
+## Other analyses that can be done with your SNP data
+
+### Example with genome context
+
+
+#### Bar Plot of Genome Context
+```{r}
+# Change CONTEXT to a factor
+mySNPs_gwas_table$CONTEXT <- as.factor(mySNPs_gwas_table$CONTEXT)
+```
+
+The below code uses the function `fct_infreq` from the `forcats` package in `tidyverse` to order the bars according to abundance.
+
+```{r}
+ggplot(mySNPs_gwas_table, aes(x = fct_infreq(CONTEXT))) + 
+    geom_bar() +
+    coord_flip() +
+    labs(y = "SNP Count", x = "Genome Context", title="Plot of Genome Context SNP Counts")
+```
+
+#### Pie Chart of Genome Context
+```{r, fig.height=6}
+ggplot(mySNPs_gwas_table, aes(x = "", fill = fct_infreq(CONTEXT))) + 
+    geom_bar(width = 1) +
+    coord_polar(theta = "y", start=0) +
+    labs(y = "SNP Count", fill = "Genome Context", title="Plot of Genome Context SNP Counts")
+```
+
+
+### Manhattan plots
+
+With help from [Daniel Roelfs' tutorial](https://danielroelfs.com/blog/how-i-create-manhattan-plots-using-ggplot/) below is some exmaples of making Manhattan plots with the GWASCAT/mySNP data.
+
+```{r}
+# This is to create a continuous y-axis for plotting
+data_cum <- mySNPs_gwas_table %>% 
+  group_by(chromosome) %>% 
+  summarise(max_bp = max(CHR_POS)) %>% 
+  mutate(bp_add = lag(cumsum(max_bp), default = 0)) %>% 
+  select(chromosome, bp_add)
+
+mySNPs_gwas_Manh_data <- mySNPs_gwas_table %>% 
+  inner_join(data_cum, by = "chromosome") %>% 
+  mutate(bp_cum = CHR_POS + bp_add)
+```
+
+
+```{r}
+# This is for printing the chromosome label in the center position of each region
+axis_set <- mySNPs_gwas_Manh_data %>% 
+  group_by(chromosome) %>% 
+  summarize(center = mean(bp_cum))
+
+# This is for creating the ylim for ploting
+ylim <- mySNPs_gwas_Manh_data %>% 
+  filter(P.VALUE == min(P.VALUE)) %>% 
+  mutate(ylim = abs(floor(log10(P.VALUE))) + 2) %>% 
+  pull(ylim)
+
+sig <- 5e-8
+```
+
+#### Manhattan plot with all significant SNPs
+```{r}
+# Making the Manhattan plot
+ggplot(mySNPs_gwas_Manh_data, aes(x = bp_cum, y = -log10(P.VALUE), 
+                                  color = as_factor(chromosome))) +
+  geom_hline(yintercept = -log10(sig), color = "grey40", linetype = "dashed") + 
+  geom_point(alpha = 0.75) +
+  scale_x_continuous(label = axis_set$chromosome, breaks = axis_set$center) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, ylim)) +
+  scale_color_manual(values = rep(c("#276FBF", "#183059"), unique(length(axis_set$chromosome)))) +
+  scale_size_continuous(range = c(0.5,3)) +
+  labs(x = NULL, 
+       y = "-log<sub>10</sub>(P.VALUE)") + 
+  theme_minimal() +
+  theme( 
+    legend.position = "none",
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.title.y = element_markdown(),
+    axis.text.x = element_text(angle = 60, size = 8, vjust = 0.5)
+  )
+```
+
+#### Manhattan plot with DISEASE.TRAIT  significant SNPs
+```{r}
+# Making the Manhattan plot
+mySNPs_gwas_Manh_data_ED <-  mySNPs_gwas_Manh_data %>% 
+  filter(DISEASE.TRAIT == "Type 2 diabetes") 
+
+mySNPs_gwas_Manh_data_ED$have_risk_allele_count <- as.factor(mySNPs_gwas_Manh_data_ED$have_risk_allele_count)
+  
+ggplot(mySNPs_gwas_Manh_data_ED, aes(x = bp_cum, y = -log10(P.VALUE), 
+                                  color = have_risk_allele_count)) +
+  geom_point(alpha = 0.75) +
+  scale_x_continuous(label = axis_set$chromosome, breaks = axis_set$center) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, ylim)) +
+  scale_size_continuous(range = c(0.5,3)) +
+  labs(x = NULL, 
+       y = "-log<sub>10</sub>(P.VALUE)") +
+  theme( 
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.title.y = element_markdown(),
+    axis.text.x = element_text(angle = 60, size = 8, vjust = 0.5)
+  )
+```
+
+
+### Genomic localization of SNPs with GGBIO
+
+ggbio is a Bioconductor package building on top of ggplot2. It provides a genomic visualization framework that facilitates graphing of SNP, RNAseq and other data in a genome context. 'ggbio` is available through Bioconductor https://bioconductor.org/packages/release/bioc/html/ggbio.html . There is a brand new tutorial (Nov 1) that could be used to build on the below example visualizations. 
+
+#### A graph using all of the RSIDs that mapped to GWASCAT data
+
+```{r, message = FALSE, warning=FALSE}
+mySNPs_gwas_table_1_22 <- mySNPs_gwas_table %>% 
+  filter(seqnames %in% 1:22 & have_risk_allele_count > 1) %>% 
+  distinct(rsid, .keep_all = TRUE)
+
+mySNPs_gwas_plot_1_22 <- GRanges(seqnames = mySNPs_gwas_table_1_22$seqnames, ranges = mySNPs_gwas_table_1_22$start, seqlengths = seqlengths(hg19sub), seqinfo = seqinfo(hg19sub)) 
+
+ggbio()  +
+  circle(mySNPs_gwas_plot_1_22, geom = "rect", color = "steelblue") +
+  circle(hg19sub, geom = "scale", size = 2) +
+  circle(hg19sub, geom = "text", aes(label = seqnames), vjust = -2, size = 3)
+```
+
+#### Visualization of disease the genome location of disease specific alleles
+
+```{r, message = FALSE, warning=FALSE}
+mySNPs_gwas_table_disease <- mySNPs_gwas_table %>% 
+  filter(seqnames %in% 1:22 & have_risk_allele_count > 1 & DISEASE.TRAIT == "Type 2 diabetes") %>% 
+  distinct(rsid, .keep_all = TRUE)
+
+mySNPs_gwas_plot_disease <- GRanges(seqnames = mySNPs_gwas_table_disease$seqnames, ranges = mySNPs_gwas_table_disease$start, seqlengths = seqlengths(hg19sub), seqinfo = seqinfo(hg19sub)) 
+
+ggbio()  +
+  circle(mySNPs_gwas_plot_disease, geom = "rect", color = "maroon4") +
+  circle(mySNPs_gwas_plot_1_22, geom = "rect", color = "steelblue") +
+  circle(hg19sub, geom = "scale", size = 2) +
+  circle(hg19sub, geom = "text", aes(label = seqnames), vjust = -2, size = 3)
+```
+## Excercises
+
+### Excercise 1
+
+Create a Manhattan plot using a different disease trait.
+
+### Excercise 2
+
+Using ggbio map a disease alleles to a circularized human genome.
+
+### Excercise 3
+
+Make a graph using another aspect of the GWAS data.
+
+### Bonus 
+
+Identify whether you have in your data set any of the alleles identified in the Hugo Zeberg and Svante Pääbo PNAS articles. You can simply enter the RSIDs and use `filter` as in the earlier Part 1 to this lab.
+
+
+
+
+
+
+
+
+
+
+## Acknowledgements
+
+Special thanks to former MCB student Dr. Kirk MacKinnon for ideas of further using the GWASCAT data and visualizaitions.
+
