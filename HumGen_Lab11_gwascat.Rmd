@@ -38,6 +38,9 @@ data("CRC", package = "biovizBase")
 
 ### First load 23andMe or Ancestry data
 
+There are three separate code snippets here. The first is for the 23andMe file that we have been working with. The second is for your 23andME results file which has a hashtag on the column header line. The third is for the AncestryDNA resuts.  
+
+#### Code for the 23andMe file that we have been working with. 
 ```{r}
 # Load Files 
 mySNPs <- read_tsv("data/23andMe_complete.txt", comment = '#',
@@ -48,6 +51,32 @@ col_types =
     position = col_integer(),
     genotype = col_factor()
   ))
+```
+
+#### Code for your 23andMe file if you don't remove the hashtag on the same line as the column headers
+
+```{r, eval=FALSE}
+mySNPs <- read_tsv("data/23andMe_complete.txt", comment = '#', col_names = FALSE) %>% 
+  setNames(c("rsid","chromosome","position","genotype")) %>% 
+  mutate(chromosome = as.factor(chromosome)) %>% 
+  mutate(genotype = as.factor(genotype)) %>% 
+  mutate(position = as.numeric(position))
+```
+
+
+#### Code for AncestryDNA
+```{r, eval=FALSE}
+# Load Ancestry DNA file 
+mySNPs <- read_tsv("data/AncestryDNA.txt", comment = '#',
+col_types =
+  cols(
+    rsid = col_character(),
+    chromosome = col_factor(),
+    position = col_integer()
+  )) %>%
+  mutate(genotype= paste(allele1, allele2, sep = '')) %>%
+  select(-c(allele1, allele2)) %>% 
+  mutate(across(genotype, as_factor))
 ```
 
 As we have seen this file holds just the rsid, position, chromosome and genotype
