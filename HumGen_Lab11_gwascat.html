@@ -1733,9 +1733,9 @@ third is for the AncestryDNA resuts.</p>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">genotype =</span> <span class="fu">col_factor</span>()</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code></pre></div>
 </div>
-<div id="code-for-your-23andme-file-if-you-dont-remove-the-hashtag-on-the-same-line-as-the-column-headers" class="section level4">
+<div id="code-for-your-23andme-file-if-you-dont-remove-the-hashtag-on-the-same-line-as-the-column-headers." class="section level4">
 <h4>Code for your 23andMe file if you don’t remove the hashtag on the
-same line as the column headers</h4>
+same line as the column headers.</h4>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mySNPs <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">&quot;data/23andMe_complete.txt&quot;</span>, <span class="at">comment =</span> <span class="st">&#39;#&#39;</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">&quot;rsid&quot;</span>,<span class="st">&quot;chromosome&quot;</span>,<span class="st">&quot;position&quot;</span>,<span class="st">&quot;genotype&quot;</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">chromosome =</span> <span class="fu">as.factor</span>(chromosome)) <span class="sc">%&gt;%</span> </span>

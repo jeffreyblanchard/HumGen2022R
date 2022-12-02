@@ -53,7 +53,7 @@ col_types =
   ))
 ```
 
-#### Code for your 23andMe file if you don't remove the hashtag on the same line as the column headers
+#### Code for your 23andMe file if you don't remove the hashtag on the same line as the column headers.
 
 ```{r, eval=FALSE}
 mySNPs <- read_tsv("data/23andMe_complete.txt", comment = '#', col_names = FALSE) %>% 
