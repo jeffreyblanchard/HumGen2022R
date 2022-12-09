@@ -13,7 +13,7 @@ output:
     toc_depth: '4'
 ---
 
-Here is a [google doc](https://docs.google.com/document/d/1RrS26lKgku4dwjNzlkARHlXqjko-w4g53BnUj3cfyTU/edit?usp=sharing) where you can put comments and challenges Or open a thread on [BUG (Bioinformatics User Group)](umass-bioinformatics.slack.com) 
+Here is a [google doc](https://docs.google.com/document/d/1RrS26lKgku4dwjNzlkARHlXqjko-w4g53BnUj3cfyTU/edit?usp=sharing) where you can put comments and challenges.
 
 ## Overview
 
@@ -147,7 +147,7 @@ Learn more: https://docs.unity.rc.umass.edu/uploading-files/index.html
 Office hours are held from 2:30-4 PM on Tuesdays via Zoom. If you have any trouble using Unity, drop in. Simon has been very helpful this past fall.
 
 ## UMass BUG
-[BUG (Bioinformatics User Group)](umass-bioinformatics.slack.com) 
+[BUG (Bioinformatics User Group)](https://umass-bioinformatics.slack.com/) 
 This Slack channel was started by UMass graduates students. Some semesters they host coding sessions and tutorials. Unfortunately Slack holds messages older than 90 days ramson pending a paid plan. Is it time for a new communication forum?
 
 
