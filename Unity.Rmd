@@ -1,5 +1,5 @@
 ---
-title: "High Performance Computing at UMass for Life Sciences"
+title: "High Performance Computing at UMass"
 author: "Jeffrey Blanchard"
 date: "12/08/2022"
 output:
@@ -12,6 +12,8 @@ output:
     toc: yes
     toc_depth: '4'
 ---
+
+Here is a [google doc](https://docs.google.com/document/d/1RrS26lKgku4dwjNzlkARHlXqjko-w4g53BnUj3cfyTU/edit?usp=sharing) where you can put comments and challenges Or open a thread on [BUG (Bioinformatics User Group)](umass-bioinformatics.slack.com) 
 
 ## Overview
 
