@@ -1,0 +1,154 @@
+---
+title: "High Performance Computing at UMass for Life Sciences"
+author: "Jeffrey Blanchard"
+date: "12/08/2022"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 4
+    theme: united
+    highlight: tango
+  word_document:
+    toc: yes
+    toc_depth: '4'
+---
+
+## Overview
+
+Most genomics research involves working with large (many GigaByte) files and steps with high computational resource needs, such as read assembly. Many bioinformatic applications are developed for Unix operating systems. This can be more difficult or not possible to install on Windows computers. Using Unix-based high performance computers systems you can schedule periodic high-demand workloads that would be impossible to handle on traditional infrastructure by combining computing power across multiple computers, servers, or clusters. The UMass [Unity cluster](https://unity.rc.umass.edu/index.php) "is a collaborative, multi-institutional high-performance computing cluster located at the Massachusetts Green High Performance Computing Center (MGHPCC). The cluster is under active development and supports primarily research activities. Partnering institutions today include UMass Amherst, UMass Dartmouth, and University of Rhode Island."  It is currently free to use for faculty and members of their research teams. Unity is managed through the [Research Computing](https://www.umass.edu/it/researchcomputing) group as part of Information Technology.
+
+When we run software on our own computers computer, we often do so in an interactive mode in which the software starts processing the data immediately and you wait for the results. This works great for many tasks. However, during this time if the software is using a lot of your memory or CPUs you may not be able to work at your computer. Often when working on a HPC (like Unity) other users are trying to run jobs at the same time. Therefore a scheduler is used to determine the order in which jobs are run and if computer resources are currently available to run a job. Slurm is the job scheduler for Unity. The que is the list of jobs waiting to be run when the requested computer nodes and CPUs become available. This is often refered to as running programs in batch mode (since you can schedule one or more jobs). 
+
+## Getting Started
+
+Faculty need to first request an account on Unity before any members of the lab can get a Unity account. Follow the steps in this [Introduction to Unity](https://docs.unity.rc.umass.edu/index.html). All students are given 50 GB in their home directory, but most nearly all work members of a research team should use the common research group directory (e.g. pi_jlb_umass_edu). Where jlb is the PI's initials. This lab group work spaces have considerable more memory and when software and/or databases are installed in this space they are then available to all members of the group. While the primary purpose of HPCs is for running jobs that require more resources than a typical laptop/desktop, the new JupyterLab interface supports a common collaborative data analysis environment with everyone working from the same files. To change into the lab directory go to 
+
+```{r, eval=FALSE}
+cd /work/pi_jlb_umass_edu
+```
+
+or using the JupyterLab file browser
+
+## Working on the Command Line
+
+There are many nice on line tutorials available for Unix. Check out [Software Carpentry "The Unix Shell"](https://swcarpentry.github.io/shell-novice/) and [Learning the shell](https://www.linuxcommand.org/lc3_learning_the_shell.php).
+
+## Reproducible research
+
+Reproducibility is the hallmark of science, which is based on empirical observations coupled with explanatory models. While reproducibility encompasses the full science lifecycle, and includes issues such as methodological consistency and treatment of bias, on the computer we will focus on computational reproducibility: the ability to document data, analyses, and models sufficiently for other researchers to be able to understand and ideally re-execute the computations that led to scientific results and conclusions. Python Notebooks and RMarkdown documents are easy ways to document and share document your computational work. Even better, use [git](https://git-scm.com/) and/or [Github](https://github.com/) to keep track of changes in your files. 
+
+## Running software
+
+Before using software on Unity and MGHPCC you must first load the software and when you are done you can unload the software. See the documentation for other module commands. To see what software is available on Unity, type 
+
+```{r, eval=FALSE}
+module av
+```
+
+Before you can use a software package you must first load the package. 
+
+```{r, eval=FALSE}
+module load fastqc/0.11.9 
+```
+
+When you are done using the software, unload the module
+
+```{r, eval=FALSE}
+module unload fastqc/0.11.9 
+```
+
+
+## Conda, Anaconda and Miniconda
+
+Conda is an open source package management system and environment management system that runs on Windows, macOS and Linux. Increasing bioinformatics tools are distributed as a conda package that includes not only the software, but other accessory programs required to run it. Because of this it makes it much easier to get a program running. In its default configuration, conda can install and manage the thousand packages at repo.anaconda.com that are built, reviewed and maintained by Anaconda. You can install Anaconda on your own computer using the free individual version https://www.anaconda.com/products/individual. This includes Python, Jupyter, R and many other tools for doing data science. Miniconda is a free minimal installer for conda. It is a small, bootstrap version of Anaconda that includes only conda, Python, the packages they depend on, and a small number of other useful packages, including pip, zlib and a few others. Miniconda is installed on Unity. You can load miniconda
+
+```{r, eval=FALSE}
+module load miniconda/4.11.0
+```
+
+## Interactive and Batch Jobs on Unity
+
+The Unity documentation provides an overview on running jobs - https://unity.rc.umass.edu/docs/#slurm/ . Many bioinformatics applications take 10s of minutes to 10s of hours to run so there is no sense in running them interactive to wait for the results (and keep your laptop open). SBATCH jobs are typically run using a shell script containing multiple commands.
+
+
+### Shell Scripts
+
+To create a shell script open a text file, add the text echo "Hello World!" and save it as hello.sh. To be able to run it the file permissions must be changed. This is done in the terminal using chmod (for more info see https://cets.seas.upenn.edu/answers/chmod.html).
+
+
+
+```{r, eval=FALSE}
+chmod +x hello.sh
+```
+
+To run VirSorter using SBATCH copy and past the below text into a text file and save it as virsorter_sbatch.sh. This file will activate the conda vs2 environment and run virsorter. Remember to change the permissions.
+
+```{r, eval=FALSE}
+#!/bin/bash
+#SBATCH -J virsorter_sbatch
+#SBATCH -o filename_%j.txt
+#SBATCH -e filename_%j.err
+#SBATCH -c 4  # Number of Cores per Task
+#SBATCH --time=02:00:00
+#SBATCH --mem=16G
+
+# With Slurm jobs, your ~/.bashrc is not sourced, 
+# so it doesn’t initialize the shell for Conda environments and you will get an error message
+# Add this line before activating the environment:
+eval "$(conda shell.bash hook)"
+
+# Activate the virsorter vs2 conda environment
+conda activate vs2
+
+# Run virsorter
+virsorter run -w test_sbatch.out -i test.fa --min-length 1500 -j 4 all
+```
+
+To run the job in the terminal type
+
+```{r, eval=FALSE}
+sbatch virsorter_sbatch.sh
+```
+
+More sbatch options can be viewed using sbatch -h. Here is an overview of the more common options for viewing and stopping jobs https://docs.ycrc.yale.edu/clusters-at-yale/job-scheduling/
+
+```{r, eval=FALSE}
+# List your queued and running jobs:
+
+squeue --me
+
+# Cancel a queued job or kill a running job, e.g. a job with ID 12345:
+
+scancel 12345
+
+# Check status of a job, e.g. a job with ID 12345:
+
+sacct -j 12345
+
+# Check how efficiently a job ran, e.g. a job with ID 12345:
+
+seff 12345
+```
+
+
+```{r, eval=FALSE}
+chmod +x hello.sh
+```
+
+## Storage Redundancy
+Your storage on Unity has temporary (3 days) snapshots but no backups.
+It's recommended that you copy your results back to local storage.
+Learn more: https://docs.unity.rc.umass.edu/uploading-files/index.html
+
+## Unity Support
+[Unity Support](https://unity.rc.umass.edu/office-hours)  
+Office hours are held from 2:30-4 PM on Tuesdays via Zoom. If you have any trouble using Unity, drop in. Simon has been very helpful this past fall.
+
+## UMass BUG
+[BUG (Bioinformatics User Group)](umass-bioinformatics.slack.com) 
+This Slack channel was started by UMass graduates students. Some semesters they host coding sessions and tutorials. Unfortunately Slack holds messages older than 90 days ramson pending a paid plan. Is it time for a new communication forum?
+
+
+
+
+
